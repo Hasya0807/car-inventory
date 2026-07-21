@@ -1,7 +1,21 @@
 import React from 'react';
 import { Search, CarFront, ShieldCheck, Banknote } from 'lucide-react';
 
-export const BookingHero = () => {
+export const BookingHero = ({ onSearch }) => {
+  const [make, setMake] = React.useState('');
+  const [category, setCategory] = React.useState('');
+  const [search, setSearch] = React.useState('');
+
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch({
+        make: make === 'Any Make' ? '' : make,
+        category: category === 'Any Body Style' ? '' : category,
+        search
+      });
+    }
+  };
+
   return (
     <div className="bg-card rounded-3xl p-8 border border-border shadow-sm flex flex-col xl:flex-row gap-8 mb-8">
       {/* Left Text & Badges */}
@@ -53,31 +67,52 @@ export const BookingHero = () => {
           
           <div className="space-y-4">
              <div className="flex gap-4">
-                <select className="flex-1 appearance-none bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer font-medium">
-                  <option>Any Make</option>
-                  <option>Toyota</option>
-                  <option>Chevrolet</option>
-                  <option>Tesla</option>
-                  <option>BMW</option>
+                <select 
+                  value={make} 
+                  onChange={(e) => setMake(e.target.value)}
+                  className="flex-1 appearance-none bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer font-medium"
+                >
+                  <option value="">Any Make</option>
+                  <option value="Toyota">Toyota</option>
+                  <option value="Chevrolet">Chevrolet</option>
+                  <option value="Tesla">Tesla</option>
+                  <option value="BMW">BMW</option>
+                  <option value="Honda">Honda</option>
+                  <option value="Ford">Ford</option>
+                  <option value="Porsche">Porsche</option>
+                  <option value="Audi">Audi</option>
+                  <option value="Mercedes-Benz">Mercedes-Benz</option>
                 </select>
-                <select className="flex-1 appearance-none bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer font-medium">
-                  <option>Any Body Style</option>
-                  <option>Sedan</option>
-                  <option>SUV</option>
-                  <option>Truck</option>
+                <select 
+                  value={category} 
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="flex-1 appearance-none bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer font-medium"
+                >
+                  <option value="">Any Body Style</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="SUV">SUV</option>
+                  <option value="Truck">Truck</option>
+                  <option value="Coupe">Coupe</option>
+                  <option value="Hatchback">Hatchback</option>
                 </select>
              </div>
              
              <div className="relative">
                <input 
                  type="text"
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
+                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                  placeholder="Search by model or keywords..."
                  className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary"
                />
                <Search size={18} className="absolute left-4 top-3.5 text-text-muted" />
              </div>
 
-             <button className="w-full bg-primary text-text-main font-bold rounded-xl py-3 mt-2 hover:bg-primary-dark transition-colors shadow-sm">
+             <button 
+               onClick={handleSearch}
+               className="w-full bg-primary text-text-main font-bold rounded-xl py-3 mt-2 hover:bg-primary-dark transition-colors shadow-sm"
+             >
                Search Inventory
              </button>
           </div>

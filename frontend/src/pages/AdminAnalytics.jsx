@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { formatCurrency } from '../utils/formatCurrency';
 
 export const AdminAnalytics = () => {
   const [stats, setStats] = useState(null);
@@ -31,7 +32,7 @@ export const AdminAnalytics = () => {
     { label: 'Vehicles In Stock', value: stats.vehiclesInStock },
     { label: 'Out of Stock', value: stats.outOfStock },
     { label: 'Total Purchases', value: stats.totalPurchases },
-    { label: 'Total Revenue', value: `₹${stats.revenue.toLocaleString()}` },
+    { label: 'Total Revenue', value: formatCurrency(stats.revenue) },
     { label: 'Today\'s Purchases', value: stats.todaysPurchases },
   ];
 

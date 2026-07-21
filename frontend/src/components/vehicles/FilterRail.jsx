@@ -83,18 +83,18 @@ export const FilterRail = ({ filters, onFilterChange, onClear }) => {
                 placeholder="0.00"
                 className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm font-medium text-text-main focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <span className="absolute right-4 top-3.5 text-text-muted font-medium">$</span>
+              <span className="absolute right-4 top-3.5 text-text-muted font-medium">₹</span>
             </div>
-            <div className="flex-1 relative">
+            <div className="relative flex-1">
               <input 
                 type="number" 
                 name="maxPrice"
                 value={filters.maxPrice || ''}
-                onChange={handleChange}
+                onChange={(e) => onFilterChange('maxPrice', e.target.value)}
                 placeholder="Max"
-                className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm font-medium text-text-main focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary pr-8"
               />
-              <span className="absolute right-4 top-3.5 text-text-muted font-medium">$</span>
+              <span className="absolute right-4 top-3.5 text-text-muted font-medium">₹</span>
             </div>
           </div>
         </div>

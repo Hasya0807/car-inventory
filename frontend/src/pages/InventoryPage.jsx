@@ -32,10 +32,14 @@ export const InventoryPage = () => {
     }
   };
 
+  const handleHeroSearch = (filters) => {
+    Object.keys(filters).forEach(key => updateFilter(key, filters[key]));
+  };
+
   return (
     <div className="flex flex-col">
       <main className="flex-1 w-full mx-auto py-8 flex flex-col relative">
-        <BookingHero />
+        <BookingHero onSearch={handleHeroSearch} />
         
         <div className="flex flex-col md:flex-row gap-8">
           {/* Mobile filter toggle */}
@@ -92,7 +96,7 @@ export const InventoryPage = () => {
                 />
                 <button 
                   type="submit"
-                  className="bg-gray-800 text-chrome px-4 py-2 text-sm font-medium rounded-r border border-l-0 border-gray-700 hover:bg-gray-700 transition-colors"
+                  className="bg-primary text-text-main px-6 py-2 text-sm font-bold rounded-r border border-primary hover:bg-primary-dark transition-colors shadow-sm"
                 >
                   Search
                 </button>

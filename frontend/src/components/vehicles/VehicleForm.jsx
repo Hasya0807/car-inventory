@@ -83,7 +83,7 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-graphite mb-1">Price ($)</label>
+          <label className="block text-sm text-graphite mb-1">Price (₹)</label>
           <input 
             {...register('price', { valueAsNumber: true })}
             type="number"

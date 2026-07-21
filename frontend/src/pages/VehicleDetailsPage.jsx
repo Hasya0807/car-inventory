@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import vehicleService from '../services/vehicle.service';
 import { useToast } from '../context/ToastContext';
+import { formatCurrency } from '../utils/formatCurrency';
 import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin } from 'lucide-react';
 import { cn } from '../context/ToastContext';
 
@@ -83,7 +85,7 @@ export const VehicleDetailsPage = () => {
         
         <div className="flex items-baseline gap-3 mb-8">
           <span className="text-4xl font-semibold text-text-main">
-            ${vehicle.price.toLocaleString()}
+            {formatCurrency(vehicle.price)}
           </span>
           <span className="text-sm font-medium text-text-muted bg-surface px-3 py-1 rounded-full border border-border">
             VIN: {vehicle._id.slice(-8).toUpperCase()}
