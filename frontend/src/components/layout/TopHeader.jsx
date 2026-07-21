@@ -1,10 +1,12 @@
 import React from 'react';
 import { Sun, Moon, Mail, Bell, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Link } from 'react-router-dom';
 
 export const TopHeader = () => {
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <header className="h-20 bg-surface flex items-center justify-between px-8 w-full">
@@ -17,14 +19,24 @@ export const TopHeader = () => {
 
       {/* Utilities */}
       <div className="flex items-center gap-6">
-        {/* Theme Toggle (UI Mock) */}
-        <div className="flex items-center bg-card rounded-full shadow-sm p-1 border border-border">
-          <button className="p-2 bg-primary rounded-full text-text-main transition-colors">
+        {/* Theme Toggle */}
+        <div className="flex items-center bg-card rounded-full shadow-sm p-1 border border-border relative">
+          <button 
+            onClick={() => isDark && toggleTheme()}
+            className={`p-2 rounded-full transition-colors relative z-10 ${!isDark ? 'text-text-main' : 'text-text-muted hover:text-text-main'}`}
+          >
             <Sun size={18} />
           </button>
-          <button className="p-2 text-text-muted hover:text-text-main transition-colors">
+          <button 
+            onClick={() => !isDark && toggleTheme()}
+            className={`p-2 rounded-full transition-colors relative z-10 ${isDark ? 'text-text-main' : 'text-text-muted hover:text-text-main'}`}
+          >
             <Moon size={18} />
           </button>
+          {/* Animated Background Pill */}
+          <div 
+            className={`absolute top-1 bottom-1 w-[34px] bg-primary rounded-full transition-transform duration-300 ease-in-out ${isDark ? 'translate-x-[34px]' : 'translate-x-0'}`}
+          ></div>
         </div>
 
         {/* Icons */}

@@ -192,7 +192,7 @@ export const VehicleDetailsPage = () => {
               className={cn(
                 "px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isOutOfStock 
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed shadow-none" 
+                  ? "bg-surface text-text-muted border border-border cursor-not-allowed shadow-none" 
                   : "bg-primary text-text-main hover:bg-primary-dark hover:shadow-md hover:scale-105"
               )}
             >

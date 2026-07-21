@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FFE600; /* DriveMatch Yellow */
-  --color-primary-dark: #E6D000;
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
   
-  --color-surface: #F4F5F7;
-  --color-card: #FFFFFF;
+  --color-surface: var(--surface);
+  --color-card: var(--card);
   
-  --color-text-main: #111827;
-  --color-text-muted: #6B7280;
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
   
-  --color-border: #E5E7EB;
+  --color-border: var(--border);
   
   --color-ignition: #FF4B2B;
   --color-status-green: #3ECF8E;
@@ -31,6 +31,26 @@
 }
 
 @layer base {
+  :root {
+    --primary: #FFE600;
+    --primary-dark: #E6D000;
+    --surface: #F4F5F7;
+    --card: #FFFFFF;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border: #E5E7EB;
+  }
+
+  .dark {
+    --primary: #FFE600;
+    --primary-dark: #E6D000;
+    --surface: #111827;
+    --card: #1F2937;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --border: #374151;
+  }
+
   body {
     background-color: var(--color-surface);
     color: var(--color-text-main);
