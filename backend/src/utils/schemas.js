@@ -3,7 +3,10 @@ const { z } = require('zod');
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  avatar: z.string().optional()
 });
 
 const loginSchema = z.object({
@@ -18,6 +21,11 @@ const createVehicleSchema = z.object({
   price: z.number().min(0, 'Price must be positive'),
   quantity: z.number().min(0, 'Quantity must be positive').optional(),
   year: z.number().optional(),
+  fuel: z.string().optional(),
+  transmission: z.string().optional(),
+  mileage: z.number().optional(),
+  color: z.string().optional(),
+  images: z.array(z.string()).optional(),
   imageUrl: z.string().optional(),
   description: z.string().optional()
 });

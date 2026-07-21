@@ -1,7 +1,8 @@
 const express = require('express');
 const { 
   createVehicle, 
-  getVehicles, 
+  getVehicles,
+  getVehicle, 
   updateVehicle, 
   deleteVehicle,
   purchaseVehicle,
@@ -21,6 +22,7 @@ router.route('/')
   .get(protect, getVehicles);
 
 router.route('/:id')
+  .get(protect, getVehicle)
   .put(protect, admin, validate(updateVehicleSchema), updateVehicle)
   .delete(protect, admin, deleteVehicle);
 

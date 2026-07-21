@@ -1,8 +1,16 @@
 const ApiError = require('../utils/ApiError');
 const Vehicle = require('../models/Vehicle');
+const Purchase = require('../models/Purchase');
+const ActivityLog = require('../models/ActivityLog');
 
 const createVehicle = async (data) => {
-  return await Vehicle.create(data);
+  const vehicle = await Vehicle.create(data);
+  await ActivityLog.create({
+    userId: data.createdBy,
+    action: 'Vehicle Added',
+    vehicleId: vehicle._id
+  });
+  return vehicle;
 };
 
 const getVehicleOr404 = async (id) => {
@@ -13,15 +21,22 @@ const getVehicleOr404 = async (id) => {
   return vehicle;
 };
 
-const updateVehicle = async (id, data) => {
+const updateVehicle = async (id, data, adminId) => {
   const vehicle = await getVehicleOr404(id);
   Object.assign(vehicle, data);
-  return await vehicle.save();
+  await vehicle.save();
+  if (adminId) {
+    await ActivityLog.create({ userId: adminId, action: 'Vehicle Updated', vehicleId: id });
+  }
+  return vehicle;
 };
 
-const deleteVehicle = async (id) => {
+const deleteVehicle = async (id, adminId) => {
   const vehicle = await getVehicleOr404(id);
   await vehicle.deleteOne();
+  if (adminId) {
+    await ActivityLog.create({ userId: adminId, action: 'Vehicle Deleted', vehicleId: id });
+  }
   return { success: true, message: 'Vehicle removed' };
 };
 
@@ -29,28 +44,45 @@ const getVehicleById = async (id) => {
   return await getVehicleOr404(id);
 };
 
+const escapeRegex = (text) => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 const buildVehicleQuery = (filters) => {
   const query = {};
-  if (filters.make) query.make = { $regex: filters.make, $options: 'i' };
-  if (filters.model) query.model = { $regex: filters.model, $options: 'i' };
+  if (filters.make) query.make = { $regex: escapeRegex(filters.make), $options: 'i' };
+  if (filters.model) query.model = { $regex: escapeRegex(filters.model), $options: 'i' };
   if (filters.category) query.category = filters.category;
+  if (filters.fuel) query.fuel = filters.fuel;
+  if (filters.transmission) query.transmission = filters.transmission;
   
   if (filters.minPrice || filters.maxPrice) {
     query.price = {};
     if (filters.minPrice) query.price.$gte = Number(filters.minPrice);
     if (filters.maxPrice) query.price.$lte = Number(filters.maxPrice);
   }
+  if (filters.inStock === 'true') {
+    query.quantity = { $gt: 0 };
+  }
   return query;
 };
 
-const getVehicles = async (filters, page = 1, limit = 10) => {
+const getVehicles = async (filters, page = 1, limit = 10, sort = 'price_asc') => {
   const query = buildVehicleQuery(filters);
-  query.quantity = { $gte: 0 }; // Only vehicles with quantity >= 0
+  if (!filters.inStock) {
+    query.quantity = { $gte: 0 }; 
+  }
 
   const skip = (page - 1) * limit;
   const totalCount = await Vehicle.countDocuments(query);
+  
+  let sortObj = { price: 1 };
+  if (sort === 'price_desc') sortObj = { price: -1 };
+  if (sort === 'newest') sortObj = { createdAt: -1 };
+  if (sort === 'oldest') sortObj = { createdAt: 1 };
+
   const vehicles = await Vehicle.find(query)
-    .sort({ price: 1 })
+    .sort(sortObj)
     .skip(skip)
     .limit(Number(limit));
 
@@ -62,7 +94,7 @@ const getVehicles = async (filters, page = 1, limit = 10) => {
   };
 };
 
-const purchaseVehicle = async (id, quantity = 1) => {
+const purchaseVehicle = async (id, quantity = 1, userId) => {
   if (quantity <= 0) throw new ApiError(400, 'Purchase quantity must be positive');
 
   const updatedVehicle = await Vehicle.findOneAndUpdate(
@@ -77,10 +109,27 @@ const purchaseVehicle = async (id, quantity = 1) => {
       throw new ApiError(409, 'Not enough stock available');
     }
   }
+
+  if (userId) {
+    await Purchase.create({
+      userId,
+      vehicleId: id,
+      price: updatedVehicle.price,
+      quantity
+    });
+
+    await ActivityLog.create({
+      userId,
+      action: 'Vehicle Purchased',
+      vehicleId: id,
+      details: { quantity, price: updatedVehicle.price }
+    });
+  }
+
   return updatedVehicle;
 };
 
-const restockVehicle = async (id, quantity) => {
+const restockVehicle = async (id, quantity, adminId) => {
   if (quantity <= 0) throw new ApiError(400, 'Restock quantity must be positive');
 
   const updatedVehicle = await Vehicle.findByIdAndUpdate(
@@ -92,6 +141,16 @@ const restockVehicle = async (id, quantity) => {
   if (!updatedVehicle) {
     throw new ApiError(404, 'Vehicle not found');
   }
+
+  if (adminId) {
+    await ActivityLog.create({
+      userId: adminId,
+      action: 'Vehicle Restocked',
+      vehicleId: id,
+      details: { added: quantity, newTotal: updatedVehicle.quantity }
+    });
+  }
+
   return updatedVehicle;
 };
 

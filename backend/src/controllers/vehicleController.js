@@ -1,8 +1,10 @@
 const vehicleService = require('../services/vehicleService');
+const { getIO } = require('../socket');
 
 const createVehicle = async (req, res, next) => {
   try {
     const vehicle = await vehicleService.createVehicle({ ...req.body, createdBy: req.user._id });
+    try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
     res.status(201).json({ success: true, data: vehicle });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -11,10 +13,10 @@ const createVehicle = async (req, res, next) => {
 
 const getVehicles = async (req, res, next) => {
   try {
-    const { page, limit, make, model, category, minPrice, maxPrice } = req.query;
+    const { page, limit, sort, make, model, category, minPrice, maxPrice, fuel, transmission, inStock } = req.query;
     
-    const filters = { make, model, category, minPrice, maxPrice };
-    const result = await vehicleService.getVehicles(filters, page, limit);
+    const filters = { make, model, category, minPrice, maxPrice, fuel, transmission, inStock };
+    const result = await vehicleService.getVehicles(filters, page, limit, sort);
 
     res.status(200).json({ success: true, data: result.vehicles, metadata: {
       page: result.page,
@@ -28,7 +30,8 @@ const getVehicles = async (req, res, next) => {
 
 const updateVehicle = async (req, res, next) => {
   try {
-    const vehicle = await vehicleService.updateVehicle(req.params.id, req.body);
+    const vehicle = await vehicleService.updateVehicle(req.params.id, req.body, req.user._id);
+    try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
     res.status(200).json({ success: true, data: vehicle });
   } catch (error) {
     res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -37,7 +40,8 @@ const updateVehicle = async (req, res, next) => {
 
 const deleteVehicle = async (req, res, next) => {
   try {
-    const result = await vehicleService.deleteVehicle(req.params.id);
+    const result = await vehicleService.deleteVehicle(req.params.id, req.user._id);
+    try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
     res.status(200).json(result);
   } catch (error) {
     res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -47,7 +51,8 @@ const deleteVehicle = async (req, res, next) => {
 const purchaseVehicle = async (req, res, next) => {
   try {
     const quantity = Number(req.body.quantity) || 1;
-    const vehicle = await vehicleService.purchaseVehicle(req.params.id, quantity);
+    const vehicle = await vehicleService.purchaseVehicle(req.params.id, quantity, req.user._id);
+    try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
     res.status(200).json({ success: true, data: vehicle });
   } catch (error) {
     res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -58,7 +63,17 @@ const restockVehicle = async (req, res, next) => {
   try {
     const quantity = Number(req.body.quantity);
     if (!quantity) throw new Error('Quantity is required');
-    const vehicle = await vehicleService.restockVehicle(req.params.id, quantity);
+    const vehicle = await vehicleService.restockVehicle(req.params.id, quantity, req.user._id);
+    try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
+    res.status(200).json({ success: true, data: vehicle });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
+  }
+};
+
+const getVehicle = async (req, res, next) => {
+  try {
+    const vehicle = await vehicleService.getVehicleById(req.params.id);
     res.status(200).json({ success: true, data: vehicle });
   } catch (error) {
     res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -68,6 +83,7 @@ const restockVehicle = async (req, res, next) => {
 module.exports = { 
   createVehicle, 
   getVehicles, 
+  getVehicle,
   updateVehicle, 
   deleteVehicle,
   purchaseVehicle,

@@ -5,11 +5,15 @@ app.use(express.json());
 
 const authRoutes = require('./routes/authRoutes');
 const vehicleRoutes = require('./routes/vehicleRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const interactionRoutes = require('./routes/interactionRoutes');
 
 const { errorHandler } = require('./middleware/errorMiddleware');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api', interactionRoutes); // /api/wishlist and /api/vehicles/:id/wishlist
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is healthy' });
