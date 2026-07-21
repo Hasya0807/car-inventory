@@ -4,15 +4,20 @@ import { Heart, Settings2, Info, Droplet } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { useAuth } from '../../context/AuthContext';
 
 export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
   const { addToast } = useToast();
+  const { wishlistedIds, toggleWishlistId } = useAuth() || { wishlistedIds: new Set(), toggleWishlistId: () => {} };
+
+  const isFavorite = wishlistedIds?.has(vehicle._id);
 
   const handleWishlist = async (e) => {
     e.preventDefault();
     try {
       await api.post(`/vehicles/${vehicle._id}/wishlist`);
-      addToast('Added to wishlist', 'success');
+      toggleWishlistId(vehicle._id);
+      addToast(isFavorite ? 'Removed from wishlist' : 'Added to wishlist', 'success');
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to update wishlist', 'error');
     }
@@ -52,9 +57,9 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
         {!isAdmin && (
           <button 
             onClick={handleWishlist}
-            className="absolute top-4 right-4 w-10 h-10 bg-card/80 backdrop-blur-sm text-text-muted hover:text-red-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm"
+            className={`absolute top-4 right-4 w-10 h-10 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm ${isFavorite ? 'text-red-500' : 'text-text-muted hover:text-red-500'}`}
           >
-            <Heart size={20} />
+            <Heart size={20} className={isFavorite ? "fill-red-500" : ""} />
           </button>
         )}
       </Link>

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/auth.service';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -13,6 +14,25 @@ export const AuthProvider = ({ children }) => {
     }
   });
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [wishlistedIds, setWishlistedIds] = useState(new Set());
+
+  // Fetch wishlist when user logs in or is already logged in
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (user && user.role !== 'admin') {
+        try {
+          const res = await api.get('/wishlist');
+          if (res.data && res.data.success) {
+            const ids = new Set(res.data.data.map(vehicle => vehicle._id));
+            setWishlistedIds(ids);
+          }
+        } catch (e) {
+          console.error("Failed to fetch wishlist", e);
+        }
+      }
+    };
+    fetchWishlist();
+  }, [user]);
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
@@ -32,11 +52,30 @@ export const AuthProvider = ({ children }) => {
     authService.logout();
     setUser(null);
     setToken(null);
+    setWishlistedIds(new Set());
     window.location.href = '/login';
   };
 
+  const toggleWishlistId = (id) => {
+    setWishlistedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      login, 
+      register, 
+      logout, 
+      isAdmin: user?.role === 'admin',
+      wishlistedIds,
+      toggleWishlistId
+    }}>
       {children}
     </AuthContext.Provider>
   );

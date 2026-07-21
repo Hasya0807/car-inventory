@@ -11,9 +11,12 @@ export const VehicleDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const { wishlistedIds, toggleWishlistId } = useAuth() || { wishlistedIds: new Set(), toggleWishlistId: () => {} };
+  
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const isWishlisted = wishlistedIds?.has(id);
 
   useEffect(() => {
     const fetchVehicle = async () => {
@@ -21,6 +24,17 @@ export const VehicleDetailsPage = () => {
         setLoading(true);
         const data = await vehicleService.getVehicleById(id);
         setVehicle(data);
+        
+        // Add to recently viewed in localStorage
+        try {
+          const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+          // Remove if exists, then add to front
+          const updatedViewed = [data, ...viewed.filter(v => v._id !== data._id)].slice(0, 10);
+          localStorage.setItem('recentlyViewed', JSON.stringify(updatedViewed));
+        } catch (e) {
+          console.error('Error saving to recently viewed:', e);
+        }
+
       } catch (err) {
         addToast(err.response?.data?.message || 'Failed to load vehicle details', 'error');
         navigate('/');
@@ -44,14 +58,9 @@ export const VehicleDetailsPage = () => {
 
   const handleToggleWishlist = async () => {
     try {
-      const res = await vehicleService.toggleWishlist(id);
-      if (res.action === 'added') {
-        setIsWishlisted(true);
-        addToast('Added to wishlist', 'success');
-      } else {
-        setIsWishlisted(false);
-        addToast('Removed from wishlist');
-      }
+      await vehicleService.toggleWishlist(id);
+      toggleWishlistId(id);
+      addToast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist', 'success');
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to update wishlist. Please login.', 'error');
     }
