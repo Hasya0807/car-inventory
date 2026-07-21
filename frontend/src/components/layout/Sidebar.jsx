@@ -11,7 +11,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
     { icon: Home, label: 'Dashboard', path: '/dashboard', authRequired: true },
     { icon: CarFront, label: 'Inventory', path: '/' },
     { icon: Calendar, label: 'Compare', path: '/compare', authRequired: true },
-    { icon: Heart, label: 'Wishlist', path: '/dashboard', authRequired: true },
+    { icon: Heart, label: 'Wishlist', path: '/dashboard?tab=wishlist', authRequired: true },
     { icon: HelpCircle, label: 'Support', path: '#' },
     { icon: Settings, label: 'Settings', path: '#' },
   ];
