@@ -14,3 +14,8 @@
 **Prompt:** "Implement authMiddleware.js for protect and admin guards to satisfy the tests."
 **Tool:** Gemini 3.1 Pro
 **Outcome:** Created unit/integration tests for middleware and implemented the logic. Tests pass locally.
+
+## [Phase 4 - Vehicle CRUD]
+**Prompt:** "Write unit tests for vehicleService.js and integration tests for vehicle routes. Implement Vehicle model, service, controller, and routes to satisfy tests."
+**Tool:** Gemini 3.1 Pro
+**Outcome:** Added Vehicle model and full CRUD functionality with admin protection on mutations. Tests pass locally.
