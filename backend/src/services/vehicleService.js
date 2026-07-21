@@ -29,4 +29,44 @@ const getVehicleById = async (id) => {
   return await getVehicleOr404(id);
 };
 
-module.exports = { createVehicle, updateVehicle, deleteVehicle, getVehicleById };
+const buildVehicleQuery = (filters) => {
+  const query = {};
+  if (filters.make) query.make = { $regex: filters.make, $options: 'i' };
+  if (filters.model) query.model = { $regex: filters.model, $options: 'i' };
+  if (filters.category) query.category = filters.category;
+  
+  if (filters.minPrice || filters.maxPrice) {
+    query.price = {};
+    if (filters.minPrice) query.price.$gte = Number(filters.minPrice);
+    if (filters.maxPrice) query.price.$lte = Number(filters.maxPrice);
+  }
+  return query;
+};
+
+const getVehicles = async (filters, page = 1, limit = 10) => {
+  const query = buildVehicleQuery(filters);
+  query.quantity = { $gte: 0 }; // Only vehicles with quantity >= 0
+
+  const skip = (page - 1) * limit;
+  const totalCount = await Vehicle.countDocuments(query);
+  const vehicles = await Vehicle.find(query)
+    .sort({ price: 1 })
+    .skip(skip)
+    .limit(Number(limit));
+
+  return {
+    vehicles,
+    page: Number(page),
+    totalPages: Math.ceil(totalCount / limit),
+    totalCount
+  };
+};
+
+module.exports = { 
+  createVehicle, 
+  updateVehicle, 
+  deleteVehicle, 
+  getVehicleById,
+  buildVehicleQuery,
+  getVehicles
+};

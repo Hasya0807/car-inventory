@@ -19,3 +19,8 @@
 **Prompt:** "Write unit tests for vehicleService.js and integration tests for vehicle routes. Implement Vehicle model, service, controller, and routes to satisfy tests."
 **Tool:** Gemini 3.1 Pro
 **Outcome:** Added Vehicle model and full CRUD functionality with admin protection on mutations. Tests pass locally.
+
+## [Phase 5 - Search & Pagination]
+**Prompt:** "Implement search and pagination in vehicleService and vehicleController. Add buildVehicleQuery function and unit tests. Add integration tests for search endpoints."
+**Tool:** Gemini 3.1 Pro
+**Outcome:** Implemented query builder with regex matching for text fields and range filters for price. Updated getVehicles to handle pagination and return metadata. Tests pass locally.

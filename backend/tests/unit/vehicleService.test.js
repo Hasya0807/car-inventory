@@ -65,4 +65,28 @@ describe('Vehicle Service', () => {
         .rejects.toThrow(ApiError);
     });
   });
+
+  describe('buildVehicleQuery', () => {
+    it('should filter by exact make and model with regex', () => {
+      const query = vehicleService.buildVehicleQuery({ make: 'Honda', model: 'civic' });
+      expect(query.make).toEqual({ $regex: 'Honda', $options: 'i' });
+      expect(query.model).toEqual({ $regex: 'civic', $options: 'i' });
+    });
+
+    it('should filter by category', () => {
+      const query = vehicleService.buildVehicleQuery({ category: 'SUV' });
+      expect(query.category).toBe('SUV');
+    });
+
+    it('should apply min and max price ranges', () => {
+      const query = vehicleService.buildVehicleQuery({ minPrice: 10000, maxPrice: 20000 });
+      expect(query.price).toEqual({ $gte: 10000, $lte: 20000 });
+    });
+    
+    it('should combine multiple filters', () => {
+      const query = vehicleService.buildVehicleQuery({ make: 'Ford', minPrice: 15000 });
+      expect(query.make).toBeDefined();
+      expect(query.price).toEqual({ $gte: 15000 });
+    });
+  });
 });

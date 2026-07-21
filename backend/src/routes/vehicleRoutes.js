@@ -3,6 +3,9 @@ const { createVehicle, getVehicles, updateVehicle, deleteVehicle } = require('..
 const { protect, admin } = require('../middleware/authMiddleware');
 const router = express.Router();
 
+router.route('/search')
+  .get(protect, getVehicles);
+
 router.route('/')
   .post(protect, admin, createVehicle)
   .get(protect, getVehicles);

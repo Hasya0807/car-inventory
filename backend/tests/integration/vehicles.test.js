@@ -51,13 +51,39 @@ describe('Vehicles API', () => {
   describe('GET /api/vehicles', () => {
     beforeEach(async () => {
       await Vehicle.create(vehicleData);
+      await Vehicle.create({ ...vehicleData, make: 'Toyota', model: 'Corolla', price: 22000, category: 'Sedan' });
     });
 
-    it('should return list of vehicles for authenticated user', async () => {
+    it('should return paginated list of vehicles', async () => {
       const res = await request(app).get('/api/vehicles')
         .set('Authorization', `Bearer ${userToken}`);
       expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(2);
+      expect(res.body.metadata.totalCount).toBe(2);
+    });
+  });
+
+  describe('GET /api/vehicles/search', () => {
+    beforeEach(async () => {
+      await Vehicle.create(vehicleData);
+      await Vehicle.create({ ...vehicleData, make: 'Toyota', model: 'Corolla', price: 22000, category: 'Sedan' });
+      await Vehicle.create({ ...vehicleData, make: 'Ford', model: 'Escape', price: 30000, category: 'SUV' });
+    });
+
+    it('should filter vehicles by search criteria', async () => {
+      const res = await request(app).get('/api/vehicles/search?make=Toyota')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(1);
+      expect(res.body.data[0].make).toBe('Toyota');
+    });
+
+    it('should filter by price range', async () => {
+      const res = await request(app).get('/api/vehicles/search?minPrice=21000&maxPrice=25000')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.data[0].model).toBe('Corolla');
     });
   });
 
