@@ -35,9 +35,15 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
             </button>
             <button 
               className="w-9 h-9 bg-card border border-border rounded-full flex items-center justify-center text-text-muted hover:text-red-500 shadow-sm hover:scale-110 transition-transform"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                alert('Wishlist feature coming soon / toggled!');
+                try {
+                  const api = (await import('../../services/api')).default;
+                  await api.post(`/vehicles/${vehicle._id}/wishlist`);
+                  alert('Wishlist updated!');
+                } catch (err) {
+                  alert('Please login to use the wishlist.');
+                }
               }}
             >
               <Heart size={16} />
@@ -49,7 +55,7 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {isOutOfStock ? (
             <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-              Out of Stock
+              Sold Out
             </span>
           ) : vehicle.quantity <= 2 ? (
             <span className="bg-amber-400 text-amber-950 text-xs px-3 py-1 rounded-full font-medium">
@@ -62,10 +68,11 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
       {/* Content */}
       <Link to={`/vehicles/${vehicle._id}`} className="block p-6 pt-2">
         <div className="flex justify-between items-start mb-4">
-          <div className="pr-4">
-            <h3 className="font-display font-medium text-lg text-text-main group-hover:text-primary-dark transition-colors line-clamp-1">
-              {vehicle.make} {vehicle.model} {vehicle.year} - {transmission}
+          <div className="pr-4 max-w-[70%]">
+            <h3 className="font-display font-bold text-lg text-text-main group-hover:text-primary-dark transition-colors truncate">
+              {vehicle.make} {vehicle.model}
             </h3>
+            <div className="text-sm text-text-muted">{vehicle.year} - {transmission}</div>
           </div>
           <div className="flex flex-col items-end shrink-0">
             <span className="font-medium text-xl text-text-main">

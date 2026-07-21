@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import vehicleService from '../services/vehicle.service';
 import { useToast } from '../context/ToastContext';
-import { Heart, Maximize, Calendar, HeadphonesIcon, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin } from 'lucide-react';
+import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin } from 'lucide-react';
 import { cn } from '../context/ToastContext';
 
 export const VehicleDetailsPage = () => {
@@ -11,6 +11,7 @@ export const VehicleDetailsPage = () => {
   const { addToast } = useToast();
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
     const fetchVehicle = async () => {
@@ -31,17 +32,32 @@ export const VehicleDetailsPage = () => {
   const handlePurchase = async () => {
     try {
       await vehicleService.purchaseVehicle(id, 1);
-      addToast('Vehicle booked successfully!', 'success');
+      addToast('Vehicle purchased successfully!', 'success');
       const data = await vehicleService.getVehicleById(id);
       setVehicle(data);
     } catch (err) {
-      addToast(err.response?.data?.message || 'Failed to book vehicle', 'error');
+      addToast(err.response?.data?.message || 'Failed to purchase vehicle', 'error');
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    try {
+      const res = await vehicleService.toggleWishlist(id);
+      if (res.action === 'added') {
+        setIsWishlisted(true);
+        addToast('Added to wishlist', 'success');
+      } else {
+        setIsWishlisted(false);
+        addToast('Removed from wishlist');
+      }
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to update wishlist. Please login.', 'error');
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center h-64 w-full">
         <div className="text-text-muted font-medium">Loading details...</div>
       </div>
     );
@@ -51,146 +67,134 @@ export const VehicleDetailsPage = () => {
 
   const isOutOfStock = vehicle.quantity <= 0;
   
-  // Mock data to match UI
-  const rating = "4.8";
-  const miles = "560 miles";
-  const trips = "52 trips";
+  // Mock data for UI
   const transmission = vehicle.transmission || 'Automatic';
-  const fuel = vehicle.fuel || 'Electric';
+  const fuel = vehicle.fuel || 'Petrol';
+  const mileage = Math.floor(Math.random() * 50000) + 1000;
 
   return (
-    <div className="flex flex-col xl:flex-row gap-8 w-full">
+    <div className="flex flex-col xl:flex-row gap-8 w-full mt-4">
       {/* Left Column: Details */}
       <div className="w-full xl:w-2/5 flex flex-col pt-4">
         
-        <h1 className="text-2xl md:text-3xl font-display font-medium text-text-main mb-2">
-          {vehicle.make} {vehicle.model} {vehicle.year} – {fuel}
+        <h1 className="text-2xl md:text-4xl font-display font-bold text-text-main mb-2 leading-tight">
+          {vehicle.make} {vehicle.model} {vehicle.year}
         </h1>
         
-        <div className="flex items-baseline gap-2 mb-6">
+        <div className="flex items-baseline gap-3 mb-8">
           <span className="text-4xl font-semibold text-text-main">
             ${vehicle.price.toLocaleString()}
           </span>
-          <span className="text-text-muted font-medium">/Day</span>
+          <span className="text-sm font-medium text-text-muted bg-surface px-3 py-1 rounded-full border border-border">
+            VIN: {vehicle._id.slice(-8).toUpperCase()}
+          </span>
         </div>
 
         {/* Badges */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-sm font-medium text-text-main shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-text-main">
-              <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-            </svg>
-            {rating}
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-text-main shadow-sm">
+             <Car size={18} className="text-text-muted" />
+             {vehicle.category}
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-sm font-medium text-text-main shadow-sm">
-             <Car size={16} className="text-text-muted" />
-            {miles}
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-text-main shadow-sm">
+            <Navigation size={18} className="text-text-muted" />
+            {mileage.toLocaleString()} mi
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-sm font-medium text-text-main shadow-sm">
-            <Navigation size={16} className="text-text-muted" />
-            {trips}
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-sm font-medium text-text-main shadow-sm">
-            <Settings2 size={16} className="text-text-muted" />
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-text-main shadow-sm">
+            <Settings2 size={18} className="text-text-muted" />
             {transmission}
           </div>
         </div>
 
-        {/* Smart Ride 1 */}
+        {/* Dealership Assurances */}
         <div className="mb-6 bg-card p-6 rounded-3xl border border-border shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-text-main">Smart Ride</h3>
-            <button className="text-text-muted hover:text-text-main transition-colors">
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
+            <h3 className="text-lg font-bold text-text-main">DriveMatch Promise</h3>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <Calendar size={18} />
-                <span className="font-medium text-sm">Quick Book</span>
+                <ShieldCheck size={18} className="text-primary-dark" />
+                <span className="font-bold text-sm">Certified Pre-Owned</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">Book instantly</span>
+              <span className="text-xs text-text-muted pl-6.5">150-point inspection passed</span>
             </div>
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <HeadphonesIcon size={18} />
-                <span className="font-medium text-sm">Customer Care</span>
+                <Wrench size={18} className="text-primary-dark" />
+                <span className="font-bold text-sm">Warranty Included</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">Track your ride</span>
+              <span className="text-xs text-text-muted pl-6.5">3-months / 3k miles</span>
             </div>
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <Navigation size={18} />
-                <span className="font-medium text-sm">Live Tracking</span>
+                <Navigation size={18} className="text-primary-dark" />
+                <span className="font-bold text-sm">Free Delivery</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">Support 24/7</span>
+              <span className="text-xs text-text-muted pl-6.5">Within 50 miles</span>
             </div>
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <CreditCard size={18} />
-                <span className="font-medium text-sm">Secure Pay</span>
+                <CreditCard size={18} className="text-primary-dark" />
+                <span className="font-bold text-sm">Flexible Financing</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">Easy payment</span>
+              <span className="text-xs text-text-muted pl-6.5">Rates as low as 4.9%</span>
             </div>
           </div>
         </div>
 
-        {/* Smart Ride 2 / Specs */}
+        {/* Specs Overview */}
         <div className="mb-6 bg-card p-6 rounded-3xl border border-border shadow-sm flex-1 flex flex-col">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-text-main">Smart Ride</h3>
-            <button className="text-text-muted hover:text-text-main transition-colors">
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-text-main">Specifications</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-auto">
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
-               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <Car size={18} />
-                <span className="font-medium text-sm">Model Type</span>
+               <div className="flex items-center gap-2 mb-1 text-text-muted">
+                <Car size={16} />
+                <span className="font-medium text-xs uppercase tracking-wider">Make</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5 capitalize">{vehicle.category}</span>
+              <span className="text-sm text-text-main font-bold pl-6">{vehicle.make}</span>
             </div>
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
-               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <Fuel size={18} />
-                <span className="font-medium text-sm">Fuel Efficiency</span>
+               <div className="flex items-center gap-2 mb-1 text-text-muted">
+                <Fuel size={16} />
+                <span className="font-medium text-xs uppercase tracking-wider">Fuel Type</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">{fuel}</span>
+              <span className="text-sm text-text-main font-bold pl-6">{fuel}</span>
             </div>
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
-               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <Settings2 size={18} />
-                <span className="font-medium text-sm">Transmission</span>
+               <div className="flex items-center gap-2 mb-1 text-text-muted">
+                <Settings2 size={16} />
+                <span className="font-medium text-xs uppercase tracking-wider">Transmission</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">{transmission}</span>
+              <span className="text-sm text-text-main font-bold pl-6">{transmission}</span>
             </div>
             <div className="bg-surface p-4 rounded-2xl flex flex-col justify-center">
-               <div className="flex items-center gap-2 mb-1 text-text-main">
-                <Users size={18} />
-                <span className="font-medium text-sm">Capacity</span>
+               <div className="flex items-center gap-2 mb-1 text-text-muted">
+                <Users size={16} />
+                <span className="font-medium text-xs uppercase tracking-wider">Stock</span>
               </div>
-              <span className="text-xs text-text-muted pl-6.5">5 seats</span>
+              <span className="text-sm text-text-main font-bold pl-6">{vehicle.quantity} Units Available</span>
             </div>
           </div>
           
-          {/* Action Footer inside the card */}
-          <div className="mt-8 pt-4 border-t border-border flex items-center justify-between">
+          {/* Purchase Footer inside the card */}
+          <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
             <div className="text-sm font-medium text-text-muted">
-              Schedule this ride for <span className="text-text-main underline decoration-gray-300 underline-offset-4">10:00 AM</span>
+              Ready to buy?
             </div>
             <button 
               onClick={handlePurchase}
               disabled={isOutOfStock}
               className={cn(
-                "px-6 py-2.5 rounded-full font-medium text-sm transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                "px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isOutOfStock 
                   ? "bg-gray-200 text-gray-500 cursor-not-allowed shadow-none" 
-                  : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:scale-105"
+                  : "bg-primary text-text-main hover:bg-primary-dark hover:shadow-md hover:scale-105"
               )}
             >
-              {isOutOfStock ? 'Unavailable' : 'Confirm'}
+              {isOutOfStock ? 'Sold Out' : 'Purchase Vehicle'}
             </button>
           </div>
         </div>
@@ -208,13 +212,13 @@ export const VehicleDetailsPage = () => {
               <Maximize size={20} />
             </button>
             <button 
-              className="w-12 h-12 bg-card border border-border rounded-full flex items-center justify-center text-text-muted hover:text-red-500 shadow hover:scale-110 transition-transform"
-              onClick={(e) => {
-                e.preventDefault();
-                alert('Wishlist feature toggled!');
-              }}
+              className={cn(
+                "w-12 h-12 bg-card border border-border rounded-full flex items-center justify-center shadow hover:scale-110 transition-transform",
+                isWishlisted ? "text-red-500" : "text-text-muted hover:text-red-500"
+              )}
+              onClick={handleToggleWishlist}
             >
-              <Heart size={20} />
+              <Heart size={20} className={isWishlisted ? "fill-red-500" : ""} />
             </button>
           </div>
 
@@ -235,21 +239,21 @@ export const VehicleDetailsPage = () => {
         {/* My Location Block */}
         <div className="bg-card p-6 rounded-3xl border border-border shadow-sm flex-1 flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-medium text-text-main">My Location</h3>
+            <h3 className="text-xl font-bold text-text-main">Dealership Location</h3>
             <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:text-text-main transition-colors">
                <Maximize size={14} />
             </button>
           </div>
           <div className="flex-1 bg-surface rounded-2xl overflow-hidden relative min-h-[250px]">
             {/* Map Placeholder Image */}
-            <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=New+York,NY&zoom=14&size=800x400&maptype=roadmap&sensor=false')] bg-cover bg-center opacity-70 grayscale"></div>
+            <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Los+Angeles,CA&zoom=13&size=800x400&maptype=roadmap&sensor=false')] bg-cover bg-center opacity-70 grayscale"></div>
             {/* Custom overlay marker */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-              <div className="bg-card text-text-main font-semibold text-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2 mb-1 border border-border">
-                <MapPin size={16} className="text-primary-dark" />
-                Current Location
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center hover:-translate-y-2 transition-transform cursor-pointer">
+              <div className="bg-card text-text-main font-bold text-sm px-5 py-2.5 rounded-full shadow-lg flex items-center gap-2 mb-1 border border-border">
+                <MapPin size={18} className="text-primary-dark" />
+                DriveMatch Showroom
               </div>
-              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-card drop-shadow-md"></div>
+              <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-card drop-shadow-md"></div>
             </div>
           </div>
         </div>

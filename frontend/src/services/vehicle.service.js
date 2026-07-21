@@ -35,6 +35,11 @@ const restockVehicle = async (id, quantity) => {
   return response.data.data;
 };
 
+const toggleWishlist = async (id) => {
+  const response = await api.post(`/vehicles/${id}/wishlist`);
+  return response.data;
+};
+
 export default {
   getVehicles,
   getVehicleById,
@@ -42,5 +47,6 @@ export default {
   updateVehicle,
   deleteVehicle,
   purchaseVehicle,
-  restockVehicle
+  restockVehicle,
+  toggleWishlist
 };

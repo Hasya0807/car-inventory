@@ -15,14 +15,14 @@ const { createVehicleSchema, updateVehicleSchema, purchaseSchema, restockSchema 
 const router = express.Router();
 
 router.route('/search')
-  .get(protect, getVehicles);
+  .get(getVehicles);
 
 router.route('/')
   .post(protect, admin, validate(createVehicleSchema), createVehicle)
-  .get(protect, getVehicles);
+  .get(getVehicles);
 
 router.route('/:id')
-  .get(protect, getVehicle)
+  .get(getVehicle)
   .put(protect, admin, validate(updateVehicleSchema), updateVehicle)
   .delete(protect, admin, deleteVehicle);
 
