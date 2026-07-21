@@ -131,4 +131,50 @@ describe('Vehicles API', () => {
       expect(found).toBeNull();
     });
   });
+
+  describe('POST /api/vehicles/:id/purchase', () => {
+    let vehicleId;
+    beforeEach(async () => {
+      const v = await Vehicle.create(vehicleData);
+      vehicleId = v._id;
+    });
+
+    it('should purchase vehicle and decrement stock', async () => {
+      const res = await request(app).post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ quantity: 2 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.quantity).toBe(3);
+    });
+
+    it('should block purchasing more than stock', async () => {
+      const res = await request(app).post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ quantity: 10 });
+      expect(res.statusCode).toBe(409);
+    });
+  });
+
+  describe('POST /api/vehicles/:id/restock', () => {
+    let vehicleId;
+    beforeEach(async () => {
+      const v = await Vehicle.create(vehicleData);
+      vehicleId = v._id;
+    });
+
+    it('should block non-admin', async () => {
+      const res = await request(app).post(`/api/vehicles/${vehicleId}/restock`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ quantity: 5 });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('should increase stock for admin', async () => {
+      const res = await request(app).post(`/api/vehicles/${vehicleId}/restock`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ quantity: 5 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.quantity).toBe(10);
+    });
+  });
 });

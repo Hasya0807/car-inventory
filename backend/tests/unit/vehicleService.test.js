@@ -89,4 +89,54 @@ describe('Vehicle Service', () => {
       expect(query.price).toEqual({ $gte: 15000 });
     });
   });
+
+  describe('purchaseVehicle', () => {
+    let vehicleId;
+    beforeEach(async () => {
+      const created = await vehicleService.createVehicle(validVehicleData); // quantity: 10
+      vehicleId = created._id;
+    });
+
+    it('should purchase exactly the remaining stock', async () => {
+      await vehicleService.purchaseVehicle(vehicleId, 10);
+      const vehicle = await Vehicle.findById(vehicleId);
+      expect(vehicle.quantity).toBe(0);
+    });
+
+    it('should successfully purchase 1 from stock', async () => {
+      await vehicleService.purchaseVehicle(vehicleId, 1);
+      const vehicle = await Vehicle.findById(vehicleId);
+      expect(vehicle.quantity).toBe(9);
+    });
+
+    it('should throw ApiError(409) if purchasing more than stock', async () => {
+      await expect(vehicleService.purchaseVehicle(vehicleId, 15)).rejects.toThrow(ApiError);
+      try {
+        await vehicleService.purchaseVehicle(vehicleId, 15);
+      } catch (err) {
+        expect(err.statusCode).toBe(409);
+      }
+      // stock unchanged
+      const vehicle = await Vehicle.findById(vehicleId);
+      expect(vehicle.quantity).toBe(10);
+    });
+  });
+
+  describe('restockVehicle', () => {
+    let vehicleId;
+    beforeEach(async () => {
+      const created = await vehicleService.createVehicle(validVehicleData); // quantity: 10
+      vehicleId = created._id;
+    });
+
+    it('should increase quantity on restock', async () => {
+      await vehicleService.restockVehicle(vehicleId, 5);
+      const vehicle = await Vehicle.findById(vehicleId);
+      expect(vehicle.quantity).toBe(15);
+    });
+
+    it('should throw error on negative quantity', async () => {
+      await expect(vehicleService.restockVehicle(vehicleId, -5)).rejects.toThrow(ApiError);
+    });
+  });
 });

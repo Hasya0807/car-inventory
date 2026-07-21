@@ -24,3 +24,8 @@
 **Prompt:** "Implement search and pagination in vehicleService and vehicleController. Add buildVehicleQuery function and unit tests. Add integration tests for search endpoints."
 **Tool:** Gemini 3.1 Pro
 **Outcome:** Implemented query builder with regex matching for text fields and range filters for price. Updated getVehicles to handle pagination and return metadata. Tests pass locally.
+
+## [Phase 6 - Purchase / Restock]
+**Prompt:** "Implement purchase and restock logic using atomic conditional updates (findOneAndUpdate) to prevent overselling. Write comprehensive unit and integration tests."
+**Tool:** Gemini 3.1 Pro
+**Outcome:** Added atomic update operations for purchase and restock endpoints, ensuring safe concurrent purchases. Tests pass locally.

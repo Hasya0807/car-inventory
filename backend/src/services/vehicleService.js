@@ -62,11 +62,46 @@ const getVehicles = async (filters, page = 1, limit = 10) => {
   };
 };
 
+const purchaseVehicle = async (id, quantity = 1) => {
+  if (quantity <= 0) throw new ApiError(400, 'Purchase quantity must be positive');
+
+  const updatedVehicle = await Vehicle.findOneAndUpdate(
+    { _id: id, quantity: { $gte: quantity } },
+    { $inc: { quantity: -quantity } },
+    { new: true }
+  );
+
+  if (!updatedVehicle) {
+    const vehicle = await getVehicleOr404(id);
+    if (vehicle.quantity < quantity) {
+      throw new ApiError(409, 'Not enough stock available');
+    }
+  }
+  return updatedVehicle;
+};
+
+const restockVehicle = async (id, quantity) => {
+  if (quantity <= 0) throw new ApiError(400, 'Restock quantity must be positive');
+
+  const updatedVehicle = await Vehicle.findByIdAndUpdate(
+    id,
+    { $inc: { quantity: quantity } },
+    { new: true }
+  );
+
+  if (!updatedVehicle) {
+    throw new ApiError(404, 'Vehicle not found');
+  }
+  return updatedVehicle;
+};
+
 module.exports = { 
   createVehicle, 
   updateVehicle, 
   deleteVehicle, 
   getVehicleById,
   buildVehicleQuery,
-  getVehicles
+  getVehicles,
+  purchaseVehicle,
+  restockVehicle
 };

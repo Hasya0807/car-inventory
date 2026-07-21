@@ -44,4 +44,32 @@ const deleteVehicle = async (req, res, next) => {
   }
 };
 
-module.exports = { createVehicle, getVehicles, updateVehicle, deleteVehicle };
+const purchaseVehicle = async (req, res, next) => {
+  try {
+    const quantity = Number(req.body.quantity) || 1;
+    const vehicle = await vehicleService.purchaseVehicle(req.params.id, quantity);
+    res.status(200).json({ success: true, data: vehicle });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
+  }
+};
+
+const restockVehicle = async (req, res, next) => {
+  try {
+    const quantity = Number(req.body.quantity);
+    if (!quantity) throw new Error('Quantity is required');
+    const vehicle = await vehicleService.restockVehicle(req.params.id, quantity);
+    res.status(200).json({ success: true, data: vehicle });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { 
+  createVehicle, 
+  getVehicles, 
+  updateVehicle, 
+  deleteVehicle,
+  purchaseVehicle,
+  restockVehicle
+};
