@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
     fetchWishlist();
   }, [user]);
 
-  const login = async (email, password) => {
-    const data = await authService.login(email, password);
+  const login = async (email, password, role) => {
+    const data = await authService.login(email, password, role);
     setUser(data.user);
     setToken(data.token);
     return data;

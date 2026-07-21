@@ -11,7 +11,7 @@ export const VehicleDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { wishlistedIds, toggleWishlistId } = useAuth() || { wishlistedIds: new Set(), toggleWishlistId: () => {} };
+  const { user, wishlistedIds, toggleWishlistId } = useAuth() || { user: null, wishlistedIds: new Set(), toggleWishlistId: () => {} };
   
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +46,12 @@ export const VehicleDetailsPage = () => {
   }, [id, navigate, addToast]);
 
   const handlePurchase = async () => {
+    if (!user) {
+      addToast('Please log in to purchase vehicles.', 'error');
+      navigate('/login');
+      return;
+    }
+    
     try {
       await vehicleService.purchaseVehicle(id, 1);
       addToast('Vehicle purchased successfully!', 'success');
@@ -57,12 +63,18 @@ export const VehicleDetailsPage = () => {
   };
 
   const handleToggleWishlist = async () => {
+    if (!user) {
+      addToast('Please log in to save vehicles.', 'error');
+      navigate('/login');
+      return;
+    }
+
     try {
       await vehicleService.toggleWishlist(id);
       toggleWishlistId(id);
       addToast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist', 'success');
     } catch (err) {
-      addToast(err.response?.data?.message || 'Failed to update wishlist. Please login.', 'error');
+      addToast(err.response?.data?.message || 'Failed to update wishlist', 'error');
     }
   };
 

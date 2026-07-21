@@ -12,18 +12,20 @@ const { protect, admin } = require('../middleware/authMiddleware');
 const { validate } = require('../middleware/validateRequest');
 const { createVehicleSchema, updateVehicleSchema, purchaseSchema, restockSchema } = require('../utils/schemas');
 
+const upload = require('../middleware/upload');
+
 const router = express.Router();
 
 router.route('/search')
   .get(getVehicles);
 
 router.route('/')
-  .post(protect, admin, validate(createVehicleSchema), createVehicle)
+  .post(protect, admin, upload.single('image'), validate(createVehicleSchema), createVehicle)
   .get(getVehicles);
 
 router.route('/:id')
   .get(getVehicle)
-  .put(protect, admin, validate(updateVehicleSchema), updateVehicle)
+  .put(protect, admin, upload.single('image'), validate(updateVehicleSchema), updateVehicle)
   .delete(protect, admin, deleteVehicle);
 
 router.post('/:id/purchase', protect, validate(purchaseSchema), purchaseVehicle);

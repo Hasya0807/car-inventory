@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Settings2, Info, Droplet } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -7,13 +7,19 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { useAuth } from '../../context/AuthContext';
 
 export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
-  const { addToast } = useToast();
-  const { wishlistedIds, toggleWishlistId } = useAuth() || { wishlistedIds: new Set(), toggleWishlistId: () => {} };
+  const { user, wishlistedIds, toggleWishlistId } = useAuth() || { user: null, wishlistedIds: new Set(), toggleWishlistId: () => {} };
+  const navigate = useNavigate();
 
   const isFavorite = wishlistedIds?.has(vehicle._id);
 
   const handleWishlist = async (e) => {
     e.preventDefault();
+    if (!user) {
+      addToast('Please log in to save vehicles to your garage.', 'error');
+      navigate('/login');
+      return;
+    }
+    
     try {
       await api.post(`/vehicles/${vehicle._id}/wishlist`);
       toggleWishlistId(vehicle._id);

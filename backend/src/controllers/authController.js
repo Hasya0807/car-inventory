@@ -3,7 +3,7 @@ const generateToken = require('../utils/generateToken');
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, phone, address, avatar } = req.body;
+    const { name, email, password, phone, address, avatar, role } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -17,7 +17,8 @@ const register = async (req, res) => {
       password,
       phone,
       address,
-      avatar
+      avatar,
+      role: role || 'user'
     });
 
     if (user) {
@@ -46,11 +47,14 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
+      if (role && user.role !== role) {
+        return res.status(403).json({ success: false, message: `Access denied. You do not have ${role} privileges.` });
+      }
       res.json({
         success: true,
         data: {

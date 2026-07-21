@@ -3,7 +3,11 @@ const { getIO } = require('../socket');
 
 const createVehicle = async (req, res, next) => {
   try {
-    const vehicle = await vehicleService.createVehicle({ ...req.body, createdBy: req.user._id });
+    const vehicleData = { ...req.body, createdBy: req.user._id };
+    if (req.file && req.file.path) {
+      vehicleData.imageUrl = req.file.path;
+    }
+    const vehicle = await vehicleService.createVehicle(vehicleData);
     try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
     res.status(201).json({ success: true, data: vehicle });
   } catch (error) {
@@ -30,7 +34,11 @@ const getVehicles = async (req, res, next) => {
 
 const updateVehicle = async (req, res, next) => {
   try {
-    const vehicle = await vehicleService.updateVehicle(req.params.id, req.body, req.user._id);
+    const vehicleData = { ...req.body };
+    if (req.file && req.file.path) {
+      vehicleData.imageUrl = req.file.path;
+    }
+    const vehicle = await vehicleService.updateVehicle(req.params.id, vehicleData, req.user._id);
     try { getIO().emit('INVENTORY_UPDATED'); } catch (e) {}
     res.status(200).json({ success: true, data: vehicle });
   } catch (error) {
