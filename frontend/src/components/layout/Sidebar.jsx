@@ -39,7 +39,7 @@ export const Sidebar = () => {
                  <NavLink
                     to={item.path}
                     className={({ isActive }) => 
-                      `p-3 rounded-full transition-all duration-200 ${isActive && item.path !== '#' ? 'bg-primary text-text-main' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
+                      `p-3 rounded-full transition-all duration-200 ${isActive && item.path !== '#' ? 'bg-primary text-gray-900' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
                     }
                     title={item.label}
                   >

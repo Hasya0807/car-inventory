@@ -193,7 +193,7 @@ export const VehicleDetailsPage = () => {
                 "px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isOutOfStock 
                   ? "bg-surface text-text-muted border border-border cursor-not-allowed shadow-none" 
-                  : "bg-primary text-text-main hover:bg-primary-dark hover:shadow-md hover:scale-105"
+                  : "bg-primary text-gray-900 hover:bg-primary-dark hover:shadow-md hover:scale-105"
               )}
             >
               {isOutOfStock ? 'Sold Out' : 'Purchase Vehicle'}

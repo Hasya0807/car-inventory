@@ -111,7 +111,7 @@ export const BookingHero = ({ onSearch }) => {
 
              <button 
                onClick={handleSearch}
-               className="w-full bg-primary text-text-main font-bold rounded-xl py-3 mt-2 hover:bg-primary-dark transition-colors shadow-sm"
+               className="w-full bg-primary text-gray-900 font-bold rounded-xl py-3 mt-2 hover:bg-primary-dark transition-colors shadow-sm"
              >
                Search Inventory
              </button>

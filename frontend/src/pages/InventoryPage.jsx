@@ -96,7 +96,7 @@ export const InventoryPage = () => {
                 />
                 <button 
                   type="submit"
-                  className="bg-primary text-text-main px-6 py-2 text-sm font-bold rounded-r border border-primary hover:bg-primary-dark transition-colors shadow-sm"
+                  className="bg-primary text-gray-900 px-6 py-2 text-sm font-bold rounded-r border border-primary hover:bg-primary-dark transition-colors shadow-sm"
                 >
                   Search
                 </button>

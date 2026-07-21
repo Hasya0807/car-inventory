@@ -42,7 +42,7 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
             </span>
           )}
           {vehicle.year >= 2024 && (
-            <span className="bg-primary text-text-main px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+            <span className="bg-primary text-gray-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
               New Arrival
             </span>
           )}

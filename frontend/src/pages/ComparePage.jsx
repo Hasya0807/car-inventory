@@ -73,7 +73,7 @@ export const ComparePage = () => {
                 className={cn(
                   "px-4 py-2 rounded-full text-sm font-bold transition-all border flex items-center gap-2 shadow-sm",
                   isSelected 
-                    ? "bg-primary text-text-main border-primary shadow-md hover:brightness-110" 
+                    ? "bg-primary text-gray-900 border-primary shadow-md hover:brightness-110" 
                     : "bg-surface text-text-muted border-border hover:text-text-main hover:border-gray-400"
                 )}
               >

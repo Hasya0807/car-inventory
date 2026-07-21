@@ -73,7 +73,7 @@ export const CustomerDashboard = () => {
           </div>
           
           <div className="flex gap-4">
-            <Link to="/" className="bg-primary text-text-main font-bold px-6 py-3 rounded-full hover:bg-primary-dark transition-colors shadow-sm">
+            <Link to="/" className="bg-primary text-gray-900 font-bold px-6 py-3 rounded-full hover:bg-primary-dark transition-colors shadow-sm">
               Browse Inventory
             </Link>
           </div>
@@ -92,7 +92,7 @@ export const CustomerDashboard = () => {
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all whitespace-nowrap",
                   activeTab === tab.id 
-                    ? "bg-primary text-text-main shadow-sm"
+                    ? "bg-primary text-gray-900 shadow-sm"
                     : "text-text-muted hover:bg-card hover:text-text-main"
                 )}
               >
@@ -171,7 +171,7 @@ export const CustomerDashboard = () => {
                   <p className="text-text-muted max-w-md mb-8">
                     Keep track of the cars you love. Click the heart icon on any vehicle in the inventory to park it here.
                   </p>
-                  <Link to="/" className="bg-primary text-text-main font-bold px-8 py-3 rounded-full hover:bg-primary-dark transition-colors shadow-sm">
+                  <Link to="/" className="bg-primary text-gray-900 font-bold px-8 py-3 rounded-full hover:bg-primary-dark transition-colors shadow-sm">
                     Explore Inventory
                   </Link>
                 </div>
