@@ -51,7 +51,7 @@ export const InventoryPage = () => {
 
         {/* Filter Rail - hidden on mobile unless toggled */}
         <div className={cn(
-          "md:block",
+          "md:block md:sticky md:top-8 self-start",
           showMobileFilters ? "block" : "hidden"
         )}>
           <FilterRail 
