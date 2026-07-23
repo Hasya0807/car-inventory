@@ -15,6 +15,7 @@ const vehicleSchema = z.object({
   mileage: z.coerce.number().min(0, 'Mileage cannot be negative'),
   color: z.string().min(1, 'Color is required'),
   description: z.string().optional(),
+  isFeatured: z.boolean().optional(),
   // image is handled separately as a File object
 });
 
@@ -37,7 +38,8 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
       transmission: 'Automatic',
       mileage: 0,
       color: '',
-      description: ''
+      description: '',
+      isFeatured: false
     }
   });
 
@@ -203,6 +205,18 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
           rows="3"
           className="w-full bg-surface border border-border rounded-xl px-3 py-2 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
         ></textarea>
+      </div>
+
+      <div className="flex items-center gap-3 bg-surface p-4 rounded-xl border border-border">
+        <input 
+          type="checkbox" 
+          id="isFeatured"
+          {...register('isFeatured')}
+          className="w-5 h-5 rounded border-border text-primary focus:ring-primary focus:ring-offset-surface bg-card cursor-pointer"
+        />
+        <label htmlFor="isFeatured" className="text-sm font-medium text-text-main cursor-pointer select-none">
+          Mark as Featured Vehicle (Displays in Homepage Carousel)
+        </label>
       </div>
 
       <div>

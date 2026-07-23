@@ -10,6 +10,7 @@ import { useToast } from '../context/ToastContext';
 import { Filter } from 'lucide-react';
 
 import { BookingHero } from '../components/vehicles/BookingHero';
+import { FeaturedCarousel } from '../components/vehicles/FeaturedCarousel';
 
 export const InventoryPage = () => {
   const { vehicles, loading, error, meta, filters, updateFilter, clearFilters, page, setPage, refresh } = useVehicles();
@@ -33,6 +34,7 @@ export const InventoryPage = () => {
   return (
     <div className="flex flex-col">
       <main className="flex-1 w-full mx-auto py-8 flex flex-col relative">
+        <FeaturedCarousel />
         <BookingHero onSearch={handleHeroSearch} />
         
         <div className="flex flex-col md:flex-row gap-8">
