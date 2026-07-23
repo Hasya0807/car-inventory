@@ -29,7 +29,7 @@ describe('VehicleCard', () => {
   it('renders vehicle details correctly', () => {
     renderWithProviders(<VehicleCard vehicle={mockVehicle} onPurchase={() => {}} isAdmin={false} />);
     expect(screen.getByText('Honda Civic')).toBeInTheDocument();
-    expect(screen.getByText('$25,000')).toBeInTheDocument();
+    expect(screen.getByText('₹25,000')).toBeInTheDocument();
   });
 
   it('allows purchase when stock is available', () => {
