@@ -123,7 +123,7 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
         ) : (
           <button 
             onClick={() => onEdit(vehicle._id)}
-            className="w-full py-2.5 rounded-xl font-medium text-sm bg-surface text-text-main hover:bg-gray-200 transition-colors"
+            className="w-full py-2.5 rounded-xl font-bold text-sm bg-primary text-gray-900 hover:bg-primary/90 transition-all duration-300 shadow-sm hover:scale-[1.02]"
           >
             Edit Vehicle
           </button>
