@@ -7,6 +7,7 @@ import { ProtectedRoute, AdminRoute } from './components/layout/RouteGuards';
 import { InventoryPage } from './pages/InventoryPage';
 import { VehicleDetailsPage } from './pages/VehicleDetailsPage';
 import { AdminPage } from './pages/AdminPage';
+import { AdminOrdersPage } from './pages/AdminOrdersPage';
 import { CustomerDashboard } from './pages/CustomerDashboard';
 import { ComparePage } from './pages/ComparePage';
 import { AdminAnalytics } from './pages/AdminAnalytics';
@@ -35,6 +36,7 @@ function App() {
           <Route element={<AdminRoute />}>
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
           </Route>
         </Route>
