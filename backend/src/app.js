@@ -9,6 +9,7 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const interactionRoutes = require('./routes/interactionRoutes');
 const testDriveRoutes = require('./routes/testDriveRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const { errorHandler } = require('./middleware/errorMiddleware');
 
@@ -18,6 +19,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api', interactionRoutes); // /api/wishlist and /api/purchases
 app.use('/api/test-drives', testDriveRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is healthy' });

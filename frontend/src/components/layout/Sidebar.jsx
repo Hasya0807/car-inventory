@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, CarFront, Calendar, Heart, Box, HelpCircle, Settings, LogOut, X } from 'lucide-react';
+import { Home, CarFront, Calendar, Heart, Box, HelpCircle, Settings, LogOut, X, Users } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../context/ToastContext'; 
 
@@ -18,6 +18,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
     { icon: Box, label: 'Admin Panel', path: '/admin', authRequired: true },
     { icon: Calendar, label: 'Orders Placed', path: '/admin/orders', authRequired: true },
     { icon: HelpCircle, label: 'Test Drives', path: '/admin/test-drives', authRequired: true },
+    { icon: Users, label: 'Customers', path: '/admin/customers', authRequired: true },
     { icon: CarFront, label: 'Inventory', path: '/' },
   ];
 

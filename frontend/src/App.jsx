@@ -9,6 +9,7 @@ import { VehicleDetailsPage } from './pages/VehicleDetailsPage';
 import { AdminPage } from './pages/AdminPage';
 import { AdminOrdersPage } from './pages/AdminOrdersPage';
 import { AdminTestDrivesPage } from './pages/AdminTestDrivesPage';
+import { AdminCustomersPage } from './pages/AdminCustomersPage';
 import { CustomerDashboard } from './pages/CustomerDashboard';
 import { ComparePage } from './pages/ComparePage';
 import { AdminAnalytics } from './pages/AdminAnalytics';
@@ -39,6 +40,7 @@ function App() {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/orders" element={<AdminOrdersPage />} />
             <Route path="/admin/test-drives" element={<AdminTestDrivesPage />} />
+            <Route path="/admin/customers" element={<AdminCustomersPage />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
           </Route>
         </Route>
