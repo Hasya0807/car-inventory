@@ -20,7 +20,7 @@ export const AppLayout = () => {
 
       <div className="flex-1 md:ml-24 flex flex-col w-full">
         <TopHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
-        <main className="flex-1 w-full p-4 md:p-8 overflow-x-hidden">
+        <main className="flex-1 w-full p-4 md:p-8">
           <Outlet />
         </main>
       </div>
