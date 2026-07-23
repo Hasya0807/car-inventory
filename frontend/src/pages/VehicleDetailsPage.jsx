@@ -8,6 +8,7 @@ import { formatCurrency } from '../utils/formatCurrency';
 import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin, Calendar as CalendarIcon, FileText } from 'lucide-react';
 import { cn } from '../context/ToastContext';
 import { Modal } from '../components/ui/Modal';
+import { VehicleCard } from '../components/vehicles/VehicleCard';
 
 export const VehicleDetailsPage = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ export const VehicleDetailsPage = () => {
   
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [similarVehicles, setSimilarVehicles] = useState([]);
   
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
@@ -56,6 +58,16 @@ export const VehicleDetailsPage = () => {
         setLoading(true);
         const data = await vehicleService.getVehicleById(id);
         setVehicle(data);
+        
+        // Fetch similar vehicles
+        try {
+          const similarRes = await vehicleService.getVehicles({ category: data.category, limit: 5 });
+          if (similarRes.data) {
+            setSimilarVehicles(similarRes.data.filter(v => v._id !== data._id).slice(0, 4));
+          }
+        } catch (e) {
+          console.error('Failed to load similar vehicles', e);
+        }
         
         // Add to recently viewed in localStorage
         try {
@@ -364,8 +376,30 @@ export const VehicleDetailsPage = () => {
         </div>
 
       </div>
+    </div>
+    
+    {/* Similar Vehicles Section */}
+    {similarVehicles.length > 0 && (
+      <div className="w-full mt-16 mb-8">
+        <h2 className="text-2xl font-bold font-display text-text-main mb-6 flex items-center gap-2">
+          <Car size={24} className="text-primary" />
+          You Might Also Like
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {similarVehicles.map(v => (
+            <VehicleCard 
+              key={v._id} 
+              vehicle={v} 
+              onPurchase={() => navigate(`/vehicles/${v._id}`)} 
+              isAdmin={false} 
+            />
+          ))}
+        </div>
+      </div>
+    )}
 
-      <Modal isOpen={isTestDriveOpen} onClose={() => setIsTestDriveOpen(false)} title="Schedule a Test Drive">
+    {/* Test Drive Modal */}
+    <Modal isOpen={isTestDriveOpen} onClose={() => setIsTestDriveOpen(false)} title="Schedule a Test Drive">
         <form onSubmit={handleTestDriveSubmit} className="space-y-4">
           <p className="text-sm text-text-muted mb-4">Select a date and time that works for you. Our team will contact you to confirm.</p>
           <div>
