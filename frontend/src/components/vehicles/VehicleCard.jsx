@@ -87,7 +87,7 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
         </div>
 
         {/* Specs */}
-        <div className="flex items-center gap-4 text-sm text-text-muted mb-6 font-medium">
+        <div className="flex items-center gap-4 text-sm text-text-muted mb-4 font-medium">
           <div className="flex items-center gap-1.5" title="Transmission">
              <Settings2 size={16} />
              <span>{vehicle.transmission || 'Auto'}</span>
@@ -107,17 +107,28 @@ export const VehicleCard = ({ vehicle, onPurchase, isAdmin, onEdit }) => {
         </div>
       </Link>
 
-      {/* Admin Edit button below the stats if admin */}
-      {isAdmin && (
-        <div className="px-6 pb-6 pt-2 mt-auto border-t border-border">
+      <div className="px-6 pb-6 pt-2 mt-auto border-t border-border">
+        {!isAdmin ? (
+          <button
+            onClick={() => onPurchase(vehicle._id)}
+            disabled={vehicle.quantity === 0}
+            className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-300 shadow-sm ${
+              vehicle.quantity === 0
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-primary text-gray-900 hover:bg-primary/90 hover:scale-[1.02]'
+            }`}
+          >
+            {vehicle.quantity === 0 ? 'Out of Stock' : 'Purchase Vehicle'}
+          </button>
+        ) : (
           <button 
             onClick={() => onEdit(vehicle._id)}
-            className="w-full py-2 rounded-xl font-medium text-sm bg-surface text-text-main hover:bg-gray-200 transition-colors"
+            className="w-full py-2.5 rounded-xl font-medium text-sm bg-surface text-text-main hover:bg-gray-200 transition-colors"
           >
             Edit Vehicle
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

@@ -8,9 +8,33 @@ export const useVehicles = (initialFilters = {}) => {
   const [error, setError] = useState(null);
   const [meta, setMeta] = useState(null);
   
-  const [filters, setFilters] = useState(initialFilters);
-  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('inventoryFilters');
+      return saved ? JSON.parse(saved) : initialFilters;
+    } catch {
+      return initialFilters;
+    }
+  });
+  
+  const [page, setPage] = useState(() => {
+    try {
+      const savedPage = sessionStorage.getItem('inventoryPage');
+      return savedPage ? Number(savedPage) : 1;
+    } catch {
+      return 1;
+    }
+  });
+  
   const [limit, setLimit] = useState(12);
+
+  useEffect(() => {
+    sessionStorage.setItem('inventoryFilters', JSON.stringify(filters));
+  }, [filters]);
+
+  useEffect(() => {
+    sessionStorage.setItem('inventoryPage', page.toString());
+  }, [page]);
 
   const socket = useSocket();
 
@@ -49,15 +73,15 @@ export const useVehicles = (initialFilters = {}) => {
     }
   }, [socket, fetchVehicles]);
 
-  const updateFilter = (key, value) => {
+  const updateFilter = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-    setPage(1); // reset page on filter change
-  };
+    setPage(1);
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters({});
     setPage(1);
-  };
+  }, []);
 
   return {
     vehicles,

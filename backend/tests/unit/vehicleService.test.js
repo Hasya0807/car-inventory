@@ -75,7 +75,8 @@ describe('Vehicle Service', () => {
 
     it('should filter by category', () => {
       const query = vehicleService.buildVehicleQuery({ category: 'SUV' });
-      expect(query.category).toBe('SUV');
+      expect(query.category).toBeDefined();
+      expect(query.category.$in[0].test('SUV')).toBe(true);
     });
 
     it('should apply min and max price ranges', () => {

@@ -14,13 +14,7 @@ import { BookingHero } from '../components/vehicles/BookingHero';
 export const InventoryPage = () => {
   const { vehicles, loading, error, meta, filters, updateFilter, clearFilters, page, setPage, refresh } = useVehicles();
   const { addToast } = useToast();
-  const [searchTerm, setSearchTerm] = useState(filters.search || '');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    updateFilter('search', searchTerm);
-  };
 
   const handlePurchase = async (id) => {
     try {
@@ -70,38 +64,6 @@ export const InventoryPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
             <div className="hidden md:block">
               <h1 className="text-2xl font-display font-bold text-chrome">Inventory</h1>
-              <p className="text-sm text-graphite mt-1">
-                {meta ? `Showing ${vehicles.length} of ${meta.total} vehicles` : 'Loading...'}
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <select 
-                value={filters.sort || 'price_asc'}
-                onChange={(e) => updateFilter('sort', e.target.value)}
-                className="bg-charcoal border border-gray-700 rounded px-3 py-2 text-sm text-chrome focus:outline-none focus:border-ignition focus:ring-1 focus:ring-ignition"
-              >
-                <option value="price_asc">Price Low → High</option>
-                <option value="price_desc">Price High → Low</option>
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-              </select>
-
-              <form onSubmit={handleSearchSubmit} className="flex">
-                <input
-                  type="text"
-                  placeholder="Search inventory..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full sm:w-64 bg-charcoal border border-gray-700 rounded-l px-3 py-2 text-sm text-chrome focus:outline-none focus:border-ignition focus:ring-1 focus:ring-ignition"
-                />
-                <button 
-                  type="submit"
-                  className="bg-primary text-gray-900 px-6 py-2 text-sm font-bold rounded-r border border-primary hover:bg-primary-dark transition-colors shadow-sm"
-                >
-                  Search
-                </button>
-              </form>
             </div>
           </div>
 

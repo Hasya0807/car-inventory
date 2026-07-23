@@ -1,9 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Shield, LogOut, Settings } from 'lucide-react';
 
 export const SettingsPage = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   if (!user) return null;
 
@@ -67,7 +74,7 @@ export const SettingsPage = () => {
             If you wish to log out of your account on this device, click the button below. You can always log back in later.
           </p>
           <button 
-            onClick={logout}
+            onClick={handleLogout}
             className="flex items-center gap-3 bg-red-50 text-red-600 hover:bg-red-100 px-6 py-3 rounded-xl font-bold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             <LogOut size={20} />

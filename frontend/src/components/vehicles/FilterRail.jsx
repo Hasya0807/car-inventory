@@ -7,7 +7,7 @@ export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
     onFilterChange(name, value);
   };
 
-  const categories = ['Sedan', 'SUV', 'Hatchback', 'Coupe', 'Pickup', 'Van'];
+  const categories = ['Sedan', 'SUV', 'Hatchback', 'Coupe', 'Truck', 'Van'];
   const colors = [
     { label: 'Black', code: '#000000' },
     { label: 'Blue', code: '#3B82F6' },
@@ -33,6 +33,34 @@ export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
       
       <div className="space-y-8">
         
+        {/* Search */}
+        <div className="relative">
+          <input 
+            type="text" 
+            name="search"
+            value={filters.search || ''}
+            onChange={handleChange}
+            placeholder="Search inventory..."
+            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {/* Sort */}
+        <div className="relative">
+          <select 
+            name="sort"
+            value={filters.sort || 'price_asc'}
+            onChange={handleChange}
+            className="w-full appearance-none bg-surface border border-border rounded-xl pl-4 pr-10 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+          >
+            <option value="price_asc">Price Low → High</option>
+            <option value="price_desc">Price High → Low</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+          <ChevronDown size={16} className="absolute right-4 top-3.5 text-text-muted pointer-events-none" />
+        </div>
+        
         {/* Brand & Model */}
         <div className="flex gap-3">
           <div className="relative flex-1">
@@ -40,9 +68,9 @@ export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
               name="make"
               value={filters.make || ''}
               onChange={handleChange}
-              className="w-full appearance-none bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+              className="w-full appearance-none bg-surface border border-border rounded-xl pl-4 pr-10 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer text-ellipsis"
             >
-              <option value="">Select Brand</option>
+              <option value="">Brand</option>
               {meta?.makes?.map(make => (
                 <option key={make} value={make}>{make}</option>
               ))}
@@ -55,10 +83,10 @@ export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
               name="model"
               value={filters.model || ''}
               onChange={handleChange}
-              className="w-full appearance-none bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer disabled:opacity-50"
+              className="w-full appearance-none bg-surface border border-border rounded-xl pl-4 pr-10 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer disabled:opacity-50 text-ellipsis"
               disabled={!meta?.models || meta?.models.length === 0}
             >
-              <option value="">Choose Model</option>
+              <option value="">Model</option>
               {meta?.models?.map(model => (
                 <option key={model} value={model}>{model}</option>
               ))}
@@ -158,11 +186,17 @@ export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
           <h3 className="text-base font-medium text-text-main mb-4">Type</h3>
           <div className="flex flex-wrap gap-2">
             {categories.map(cat => {
-              const isActive = (filters.category || '').toLowerCase() === cat.toLowerCase();
+              const currentCategories = filters.category ? filters.category.toLowerCase().split(',') : [];
+              const isActive = currentCategories.includes(cat.toLowerCase());
               return (
                 <button
                   key={cat}
-                  onClick={() => onFilterChange('category', isActive ? '' : cat.toLowerCase())}
+                  onClick={() => {
+                    const newCats = isActive 
+                      ? currentCategories.filter(c => c !== cat.toLowerCase())
+                      : [...currentCategories, cat.toLowerCase()];
+                    onFilterChange('category', newCats.join(','));
+                  }}
                   className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
                     isActive 
                       ? 'bg-primary border-primary text-text-main shadow-sm' 
@@ -181,14 +215,24 @@ export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
           <h3 className="text-base font-medium text-text-main mb-4">Color</h3>
           <div className="flex flex-wrap gap-2">
             {colors.map(color => {
-              const isActive = filters.color === color.label;
+              const currentColors = filters.color ? filters.color.split(',') : [];
+              const isActive = currentColors.includes(color.label);
               return (
                 <button
                   key={color.label}
-                  onClick={() => onFilterChange('color', isActive ? '' : color.label)}
+                  onClick={() => {
+                    if (color.label === 'All Colors') {
+                      onFilterChange('color', '');
+                      return;
+                    }
+                    const newColors = isActive 
+                      ? currentColors.filter(c => c !== color.label)
+                      : [...currentColors.filter(c => c !== 'All Colors'), color.label];
+                    onFilterChange('color', newColors.join(','));
+                  }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
                     isActive 
-                      ? 'bg-card border-gray-400 text-text-main shadow-sm' 
+                      ? 'bg-primary border-primary text-gray-900 shadow-sm' 
                       : 'bg-card border-border text-text-main hover:border-gray-300'
                   }`}
                 >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, CarFront, Calendar, Heart, Box, HelpCircle, Settings, LogOut, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../context/ToastContext'; 
@@ -60,17 +60,19 @@ export const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Push Settings to the bottom */}
         {user && (
-          <NavLink
-            to="/settings"
-            className={({ isActive }) => 
-              `mt-auto flex items-center gap-4 w-full md:w-auto p-3 md:rounded-full rounded-xl transition-all duration-200 ${isActive ? 'bg-primary text-gray-900 shadow-md' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
-            }
-            title="Settings"
-            onClick={onClose}
-          >
-            <Settings size={22} strokeWidth={2.5} className="shrink-0" />
-            <span className="md:hidden font-medium">Settings</span>
-          </NavLink>
+          <div className="mt-auto flex flex-col gap-4 w-full md:w-auto">
+            <NavLink
+              to="/settings"
+              className={({ isActive }) => 
+                `flex items-center gap-4 w-full md:w-auto p-3 md:rounded-full rounded-xl transition-all duration-200 ${isActive ? 'bg-primary text-gray-900 shadow-md' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
+              }
+              title="Settings"
+              onClick={onClose}
+            >
+              <Settings size={22} strokeWidth={2.5} className="shrink-0" />
+              <span className="md:hidden font-medium">Settings</span>
+            </NavLink>
+          </div>
         )}
       </nav>
     </aside>

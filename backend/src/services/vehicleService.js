@@ -60,7 +60,14 @@ const buildVehicleQuery = (filters) => {
   }
   if (filters.make) query.make = { $regex: escapeRegex(filters.make), $options: 'i' };
   if (filters.model) query.model = { $regex: escapeRegex(filters.model), $options: 'i' };
-  if (filters.category) query.category = filters.category;
+  if (filters.category) {
+    const categories = filters.category.split(',').map(c => new RegExp(`^${escapeRegex(c)}$`, 'i'));
+    query.category = { $in: categories };
+  }
+  if (filters.color) {
+    const colors = filters.color.split(',').map(c => new RegExp(escapeRegex(c), 'i'));
+    query.color = { $in: colors };
+  }
   if (filters.fuel) query.fuel = filters.fuel;
   if (filters.transmission) query.transmission = filters.transmission;
   

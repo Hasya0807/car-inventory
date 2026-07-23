@@ -47,18 +47,23 @@ export const TopHeader = ({ onMenuClick }) => {
           ></div>
         </div>
 
-        {/* Avatar */}
-        <div className="flex items-center justify-center w-10 h-10 bg-primary/20 rounded-full border border-border overflow-hidden">
-          {user ? (
+        {/* Avatar / Auth */}
+        {user ? (
+          <div className="flex items-center justify-center w-10 h-10 bg-primary/20 rounded-full border border-border overflow-hidden">
             <span className="font-bold text-sm text-text-main">
               {user.name.charAt(0).toUpperCase()}
             </span>
-          ) : (
-            <Link to="/login" className="text-text-muted hover:text-primary-dark transition-colors">
-              <User size={20} />
+          </div>
+        ) : (
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="text-sm font-medium text-text-muted hover:text-text-main transition-colors hidden sm:block">
+              Login
             </Link>
-          )}
-        </div>
+            <Link to="/register" className="bg-primary text-gray-900 text-sm font-bold px-5 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm">
+              Sign Up
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );
