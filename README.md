@@ -6,7 +6,7 @@
 [![React](https://img.shields.io/badge/React-18.x-blue.svg?style=flat-square&logo=react)]()
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg?style=flat-square&logo=node.js)]()
 
-DriveMatch is an enterprise-grade, full-stack Single-Page Application (SPA) engineered to streamline automotive dealership operations. It provides a seamless, premium digital showroom for customers while offering robust, real-time inventory management capabilities for administrators. 
+DriveMatch is an enterprise-grade, full-stack Single-Page Application (SPA) engineered to streamline automotive dealership operations. It provides a seamless, premium digital showroom for customers while offering robust, real-time inventory and customer management capabilities for administrators. 
 
 Built with a strict adherence to Test-Driven Development (TDD) and SOLID principles, this system serves as a highly scalable architecture for modern dealership workflows.
 
@@ -15,16 +15,20 @@ Built with a strict adherence to Test-Driven Development (TDD) and SOLID princip
 ## ✨ Core Features
 
 ### 🛍️ Customer Experience
-- **Premium Digital Showroom**: A highly responsive, visually stunning UI built with Tailwind CSS v4 and glassmorphism elements.
+- **Premium Digital Showroom**: A highly responsive, visually stunning UI built with Tailwind CSS v4 and glassmorphism elements. Features an engaging **Hero Carousel** to spotlight prime vehicles.
 - **Advanced Algorithmic Search**: Filter inventory in real-time by Make, Model, Body Style, Transmission, and Price Range.
+- **Test Drive Bookings**: Customers can easily schedule test drives for their desired vehicles, completely synced with the dealership's timeline.
 - **Secure Transactions**: Authenticated endpoints allowing users to securely reserve and purchase vehicles.
 - **Personalized Garage**: Save favorite vehicles to a persistent wishlist.
+- **Integrated Dealership Map**: Built-in Google Maps integration to quickly find the physical showroom (Ahmedabad).
 
-### 🛡️ Administrative Control
+### 🛡️ Administrative Control (Dealership CRM)
 - **Role-Based Access Control (RBAC)**: Secure separation of privileges between guests, authenticated users, and dealership administrators.
-- **Live Inventory Management**: Perform CRUD operations on the vehicle fleet with immediate global state synchronization.
+- **Customer Directory (CRM)**: Track user engagement, monitor wishlist saves, and view total purchases on a per-user basis.
+- **Test Drive Management**: Fully functional dashboard to approve, reschedule, or cancel test drive requests submitted by customers.
+- **Sales & Order Tracking**: Dedicated "Orders Placed" dashboard groups all historical vehicle purchases by month for easy accounting.
+- **Live Inventory Management**: Perform CRUD operations on the vehicle fleet with immediate global state synchronization. Toggle "Featured" statuses for homepage marketing.
 - **Real-Time Analytics Dashboard**: Visualizations of sales data, revenue metrics, and inventory distribution powered by Recharts.
-- **One-Click Restocking**: Quickly adjust inventory levels for high-demand vehicles.
 
 ---
 
@@ -114,7 +118,9 @@ npm test -- --coverage
 | `/api/vehicles/:id` | `PUT` | **Admin** | Update existing vehicle specs |
 | `/api/vehicles/:id` | `DELETE`| **Admin** | Remove a vehicle from inventory |
 | `/api/vehicles/:id/purchase` | `POST` | Yes | Process a vehicle purchase |
-| `/api/vehicles/:id/restock` | `POST` | **Admin** | Restock a depleted vehicle |
+| `/api/orders` | `GET` | **Admin** | Fetch populated purchase data for analytics |
+| `/api/users` | `GET` | **Admin** | Fetch CRM directory of all registered users |
+| `/api/test-drives/all` | `GET` | **Admin** | Fetch all scheduled system test drives |
 
 ---
 
@@ -122,7 +128,7 @@ npm test -- --coverage
 *(Replace these placeholders with actual screenshots before deployment)*
 - `[Screenshot: Customer Dashboard / Showroom]`
 - `[Screenshot: Advanced Filtering Mechanism]`
-- `[Screenshot: Admin Analytics Dashboard]`
+- `[Screenshot: Admin CRM & Analytics Dashboard]`
 
 ---
 
