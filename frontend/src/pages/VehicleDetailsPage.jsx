@@ -343,7 +343,7 @@ export const VehicleDetailsPage = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-text-main">Dealership Location</h3>
             <button 
-              onClick={() => window.open('https://maps.google.com/?q=Los+Angeles+CA', '_blank')}
+              onClick={() => window.open('https://maps.google.com/?q=Ahmedabad', '_blank')}
               className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:text-text-main transition-colors"
             >
                <Maximize size={14} />
@@ -351,7 +351,7 @@ export const VehicleDetailsPage = () => {
           </div>
           <div className="flex-1 bg-surface rounded-2xl overflow-hidden relative min-h-[250px]">
             <iframe 
-              src="https://maps.google.com/maps?q=Los+Angeles,+CA&t=&z=13&ie=UTF8&iwloc=&output=embed" 
+              src="https://maps.google.com/maps?q=Ahmedabad&t=&z=13&ie=UTF8&iwloc=&output=embed" 
               width="100%" 
               height="100%" 
               style={{ border: 0, minHeight: '250px' }} 
