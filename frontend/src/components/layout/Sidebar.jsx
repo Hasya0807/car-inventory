@@ -53,6 +53,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
             <NavLink
               key={item.label}
               to={item.path}
+              end
               className={({ isActive }) => 
                 `flex items-center gap-4 w-full md:w-auto p-3 md:rounded-full rounded-xl transition-all duration-200 ${isActive && item.path !== '#' ? 'bg-primary text-gray-900 shadow-md' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
               }
