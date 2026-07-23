@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 const TestDrive = require('../models/TestDrive');
 const Vehicle = require('../models/Vehicle');
 const ActivityLog = require('../models/ActivityLog');
@@ -101,6 +101,49 @@ router.get('/me', protect, async (req, res, next) => {
       
     const validTestDrives = testDrives.filter(td => td.vehicleId);
     res.status(200).json({ success: true, data: validTestDrives });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin: Get all test drives
+router.get('/all', protect, admin, async (req, res, next) => {
+  try {
+    const testDrives = await TestDrive.find({})
+      .populate('userId', 'name email phone')
+      .populate('vehicleId', 'make model year imageUrl')
+      .sort({ date: 1, slot: 1 });
+      
+    res.status(200).json({ success: true, data: testDrives });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin: Update test drive status
+router.put('/:id/status', protect, admin, async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!['Scheduled', 'Completed', 'Cancelled'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+
+    const testDrive = await TestDrive.findById(req.params.id);
+    if (!testDrive) {
+      return res.status(404).json({ success: false, message: 'Test drive not found' });
+    }
+
+    testDrive.status = status;
+    await testDrive.save();
+
+    await ActivityLog.create({
+      userId: req.user._id,
+      action: `Test Drive ${status}`,
+      vehicleId: testDrive.vehicleId,
+      details: { testDriveId: testDrive._id }
+    });
+
+    res.status(200).json({ success: true, data: testDrive });
   } catch (error) {
     next(error);
   }

@@ -17,6 +17,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
   const adminItems = [
     { icon: Box, label: 'Admin Panel', path: '/admin', authRequired: true },
     { icon: Calendar, label: 'Orders Placed', path: '/admin/orders', authRequired: true },
+    { icon: HelpCircle, label: 'Test Drives', path: '/admin/test-drives', authRequired: true },
     { icon: CarFront, label: 'Inventory', path: '/' },
   ];
 
