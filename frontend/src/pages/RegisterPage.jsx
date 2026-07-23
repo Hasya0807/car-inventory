@@ -18,7 +18,6 @@ export const RegisterPage = () => {
   const { register: registerUser } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const [role, setRole] = useState('user'); // 'user' or 'admin'
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(registerSchema)
@@ -26,8 +25,8 @@ export const RegisterPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      await registerUser({ ...data, role });
-      addToast(`Account created! Logged in as ${role === 'admin' ? 'Dealership Admin' : 'Customer'}.`, 'success');
+      await registerUser(data);
+      addToast('Account created successfully!', 'success');
       navigate('/');
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to register', 'error');
@@ -44,34 +43,6 @@ export const RegisterPage = () => {
         </div>
 
         <h1 className="text-2xl font-display font-bold text-text-main text-center mb-6">Create Account</h1>
-
-        {/* Role Selector */}
-        <div className="flex p-1 bg-surface rounded-xl mb-6 border border-border">
-          <button
-            type="button"
-            onClick={() => setRole('user')}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all",
-              role === 'user' 
-                ? "bg-card text-text-main shadow-sm border border-border" 
-                : "text-text-muted hover:text-text-main"
-            )}
-          >
-            <UserCircle2 size={16} /> Customer
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('admin')}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all",
-              role === 'admin' 
-                ? "bg-primary text-gray-900 shadow-sm" 
-                : "text-text-muted hover:text-text-main"
-            )}
-          >
-            <Store size={16} /> Dealership
-          </button>
-        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
@@ -109,7 +80,7 @@ export const RegisterPage = () => {
             disabled={isSubmitting}
             className="w-full bg-primary text-gray-900 px-4 py-3 mt-4 rounded-xl font-bold hover:bg-primary-dark disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm"
           >
-            {isSubmitting ? 'Creating account...' : `Register as ${role === 'admin' ? 'Admin' : 'Customer'}`}
+            {isSubmitting ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-text-muted">
