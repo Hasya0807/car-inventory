@@ -170,7 +170,8 @@ export const VehicleDetailsPage = () => {
   const mileage = Math.floor(Math.random() * 50000) + 1000;
 
   return (
-    <div className="flex flex-col xl:flex-row gap-8 w-full mt-4">
+    <>
+      <div className="flex flex-col xl:flex-row gap-8 w-full mt-4">
       {/* Left Column: Details */}
       <div className="w-full xl:w-2/5 flex flex-col pt-4">
         
@@ -468,6 +469,6 @@ export const VehicleDetailsPage = () => {
           </button>
         </form>
       </Modal>
-    </div>
+    </>
   );
 };
