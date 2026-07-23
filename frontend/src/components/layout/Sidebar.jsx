@@ -7,13 +7,19 @@ import { cn } from '../../context/ToastContext';
 export const Sidebar = ({ isOpen, onClose }) => {
   const { logout, user } = useAuth();
 
-  const navItems = [
+  const baseItems = [
     { icon: Home, label: 'Dashboard', path: '/dashboard', authRequired: true },
-    ...(user?.role === 'admin' ? [{ icon: Box, label: 'Admin Panel', path: '/admin', authRequired: true }] : []),
     { icon: CarFront, label: 'Inventory', path: '/' },
     { icon: Calendar, label: 'Compare', path: '/compare', authRequired: true },
     { icon: Heart, label: 'Wishlist', path: '/favorites', authRequired: true },
   ];
+
+  const adminItems = [
+    { icon: Box, label: 'Admin Panel', path: '/admin', authRequired: true },
+    { icon: CarFront, label: 'Inventory', path: '/' },
+  ];
+
+  const navItems = user?.role === 'admin' ? adminItems : baseItems;
 
   return (
     <aside 
