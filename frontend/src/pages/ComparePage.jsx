@@ -8,6 +8,7 @@ export const ComparePage = () => {
   const [vehicles, setVehicles] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -64,7 +65,7 @@ export const ComparePage = () => {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {vehicles.map(v => {
+          {(showAll ? vehicles : vehicles.slice(0, 15)).map(v => {
             const isSelected = selectedIds.includes(v._id);
             return (
               <button 
@@ -82,6 +83,15 @@ export const ComparePage = () => {
               </button>
             );
           })}
+          
+          {vehicles.length > 15 && (
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="px-6 py-2 rounded-full text-sm font-bold transition-all border border-dashed border-border text-text-main hover:border-primary hover:text-primary"
+            >
+              {showAll ? "Show Less" : `+ ${vehicles.length - 15} More Cars`}
+            </button>
+          )}
         </div>
       </div>
 
