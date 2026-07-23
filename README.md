@@ -95,14 +95,23 @@ The application will be instantly accessible at `http://localhost:5173`.
 
 ## 🧪 Test Coverage & TDD
 
-This project was developed strictly adhering to the Red-Green-Refactor cycle. The backend API is entirely unit and integration tested, ensuring zero regressions during agile iterations.
+This project follows a strict Test-Driven Development (TDD) approach. The backend API contains integration tests for all primary routes (Auth, Vehicles, Orders, Test Drives, Customers, Analytics).
 
-To execute the test suite and generate a coverage report:
+To execute the test suites:
+
+### Backend Testing (Jest & Supertest)
 ```bash
 cd backend
-npm test -- --coverage
+npm test
 ```
-*Current test suites cover: Auth validation, Role-based middleware, Vehicle CRUD lifecycle, Advanced Query Parsing, and Concurrency handling for purchases.*
+*Suites cover: Auth validation, Admin Role-based access, Vehicle CRUD, Advanced filtering, Checkout process, Test Drive scheduling, Customer CRM viewing, and Order reporting.*
+
+### Frontend Testing (Vitest & React Testing Library)
+```bash
+cd frontend
+npm test
+```
+*Suites cover: UI Component rendering, Reducers, Context validation, and Dynamic state transitions (Similar Vehicles, Lightbox, Filter Rail).*
 
 ---
 
