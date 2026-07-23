@@ -10,16 +10,19 @@ const vehicleSchema = z.object({
   price: z.coerce.number().positive('Price must be greater than 0'),
   category: z.enum(['Sedan', 'SUV', 'Truck', 'Coupe', 'Hatchback', 'Van']),
   quantity: z.coerce.number().int().min(0, 'Quantity cannot be negative'),
-  fuel: z.string().optional(),
-  transmission: z.string().optional(),
-  mileage: z.coerce.number().optional(),
-  color: z.string().optional(),
+  fuel: z.string().min(1, 'Fuel Type is required'),
+  transmission: z.string().min(1, 'Transmission is required'),
+  mileage: z.coerce.number().min(0, 'Mileage cannot be negative'),
+  color: z.string().min(1, 'Color is required'),
   description: z.string().optional(),
   // image is handled separately as a File object
 });
 
+import { useToast } from '../../context/ToastContext';
+
 export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
   const [imageFile, setImageFile] = useState(null);
+  const { addToast } = useToast();
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(vehicleSchema),
@@ -51,6 +54,11 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
   };
 
   const handleFormSubmit = async (data) => {
+    if (!initialData && !imageFile) {
+      addToast('Please upload an image for the new vehicle', 'error');
+      return;
+    }
+
     // We must use FormData because we are sending a file
     const formData = new FormData();
     Object.keys(data).forEach(key => {
@@ -152,6 +160,7 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
             <option className="bg-card text-text-main" value="Electric">Electric</option>
             <option className="bg-card text-text-main" value="Hybrid">Hybrid</option>
           </select>
+          {errors.fuel && <p className="text-red-500 text-xs mt-1">{errors.fuel.message}</p>}
         </div>
         <div>
           <label className="block text-sm text-text-muted mb-1">Transmission</label>
@@ -162,6 +171,7 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
             <option className="bg-card text-text-main" value="Automatic">Automatic</option>
             <option className="bg-card text-text-main" value="Manual">Manual</option>
           </select>
+          {errors.transmission && <p className="text-red-500 text-xs mt-1">{errors.transmission.message}</p>}
         </div>
       </div>
 
@@ -173,6 +183,7 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
             type="number"
             className="w-full bg-surface border border-border rounded-xl px-3 py-2 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
           />
+          {errors.mileage && <p className="text-red-500 text-xs mt-1">{errors.mileage.message}</p>}
         </div>
         <div>
           <label className="block text-sm text-text-muted mb-1">Color</label>
@@ -181,6 +192,7 @@ export const VehicleForm = ({ initialData, onSubmit, onCancel }) => {
             type="text"
             className="w-full bg-surface border border-border rounded-xl px-3 py-2 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
           />
+          {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color.message}</p>}
         </div>
       </div>
 
