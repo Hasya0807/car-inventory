@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import vehicleService from '../services/vehicle.service';
 import { useToast } from '../context/ToastContext';
 import { formatCurrency } from '../utils/formatCurrency';
-import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin, Calendar as CalendarIcon, FileText } from 'lucide-react';
+import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin, Calendar as CalendarIcon, FileText, X } from 'lucide-react';
 import { cn } from '../context/ToastContext';
 import { Modal } from '../components/ui/Modal';
 import { VehicleCard } from '../components/vehicles/VehicleCard';
@@ -21,6 +21,7 @@ export const VehicleDetailsPage = () => {
   const [similarVehicles, setSimilarVehicles] = useState([]);
   
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]);
@@ -323,7 +324,10 @@ export const VehicleDetailsPage = () => {
         <div className="relative bg-transparent flex items-center justify-center h-[400px] xl:h-[500px]">
           {/* Floating Icons */}
           <div className="absolute top-4 right-4 flex gap-3 z-10">
-            <button className="w-12 h-12 bg-card border border-border rounded-full flex items-center justify-center text-text-main shadow hover:scale-110 transition-transform">
+            <button 
+              onClick={() => vehicle.imageUrl && setIsLightboxOpen(true)}
+              className="w-12 h-12 bg-card border border-border rounded-full flex items-center justify-center text-text-main shadow hover:scale-110 transition-transform"
+            >
               <Maximize size={20} />
             </button>
             <button 
@@ -341,7 +345,8 @@ export const VehicleDetailsPage = () => {
             <img 
               src={vehicle.imageUrl} 
               alt={`${vehicle.make} ${vehicle.model}`} 
-              className="w-full h-full object-contain drop-shadow-2xl scale-110" 
+              onClick={() => setIsLightboxOpen(true)}
+              className="w-full h-full object-contain drop-shadow-2xl scale-110 cursor-pointer hover:scale-[1.12] transition-transform duration-300" 
             />
           ) : (
             <div className="text-text-muted opacity-20 flex flex-col items-center">
@@ -469,6 +474,23 @@ export const VehicleDetailsPage = () => {
           </button>
         </form>
       </Modal>
+
+      {/* Lightbox Modal */}
+      {isLightboxOpen && vehicle.imageUrl && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <button 
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 z-[101]"
+          >
+            <X size={24} />
+          </button>
+          <img 
+            src={vehicle.imageUrl} 
+            alt="Vehicle fullscreen" 
+            className="max-w-[95vw] max-h-[90vh] object-contain animate-in zoom-in-95 duration-300"
+          />
+        </div>
+      )}
     </>
   );
 };
