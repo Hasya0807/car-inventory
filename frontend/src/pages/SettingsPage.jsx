@@ -8,8 +8,8 @@ export const SettingsPage = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
     navigate('/');
+    setTimeout(() => logout(), 10);
   };
 
   if (!user) return null;
