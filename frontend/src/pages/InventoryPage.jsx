@@ -51,7 +51,7 @@ export const InventoryPage = () => {
 
         {/* Filter Rail - hidden on mobile unless toggled */}
         <div className={cn(
-          "md:block md:sticky md:top-8 self-start max-h-[calc(100vh-6rem)] overflow-y-auto custom-scrollbar pr-2",
+          "md:block md:sticky md:top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar pr-2",
           showMobileFilters ? "block" : "hidden"
         )}>
           <FilterRail 
