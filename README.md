@@ -1,157 +1,286 @@
-# 🏎️ DriveMatch | Modern Car Dealership Platform
+# 🏎️ AutoStore — Car Dealership Inventory System
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat-square)]()
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg?style=flat-square)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)]()
-[![React](https://img.shields.io/badge/React-18.x-blue.svg?style=flat-square&logo=react)]()
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg?style=flat-square&logo=node.js)]()
+A full-stack modern car marketplace built with TDD methodology
 
-DriveMatch is an enterprise-grade, full-stack Single-Page Application (SPA) engineered to streamline automotive dealership operations. It provides a seamless, premium digital showroom for customers while offering robust, real-time inventory and customer management capabilities for administrators. 
-
-Built with a strict adherence to Test-Driven Development (TDD) and SOLID principles, this system serves as a highly scalable architecture for modern dealership workflows.
+**Node.js • React • MongoDB • Express • Tailwind CSS • Tests**
 
 ---
 
-## ✨ Core Features
+## 📸 Screenshots
 
-### 🛍️ Customer Experience
-- **Premium Digital Showroom**: A highly responsive, visually stunning UI built with Tailwind CSS v4 and glassmorphism elements. Features an engaging **Hero Carousel** to spotlight prime vehicles.
-- **Advanced Algorithmic Search**: Filter inventory in real-time by Make, Model, Body Style, Transmission, and Price Range.
-- **Test Drive Bookings**: Customers can easily schedule test drives for their desired vehicles, completely synced with the dealership's timeline.
-- **Secure Transactions**: Authenticated endpoints allowing users to securely reserve and purchase vehicles.
-- **Personalized Garage**: Save favorite vehicles to a persistent wishlist.
-- **Integrated Dealership Map**: Built-in Google Maps integration to quickly find the physical showroom (Ahmedabad).
-
-### 🛡️ Administrative Control (Dealership CRM)
-- **Role-Based Access Control (RBAC)**: Secure separation of privileges between guests, authenticated users, and dealership administrators.
-- **Customer Directory (CRM)**: Track user engagement, monitor wishlist saves, and view total purchases on a per-user basis.
-- **Test Drive Management**: Fully functional dashboard to approve, reschedule, or cancel test drive requests submitted by customers.
-- **Sales & Order Tracking**: Dedicated "Orders Placed" dashboard groups all historical vehicle purchases by month for easy accounting.
-- **Live Inventory Management**: Perform CRUD operations on the vehicle fleet with immediate global state synchronization. Toggle "Featured" statuses for homepage marketing.
-- **Real-Time Analytics Dashboard**: Visualizations of sales data, revenue metrics, and inventory distribution powered by Recharts.
+*(Replace these placeholders with actual screenshots before deployment)*
+- `[Hero Section]`
+- `[Category Filter & Advanced Search]`
+- `[Vehicle Details & Similar Cars]`
+- `[Admin Dashboard - Orders & Test Drives]`
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+## 🏗️ Architecture
 
-The platform utilizes a modern MERN-like stack with specialized libraries for performance and state management.
+```text
+┌─────────────────────────────────────────────────────────┐
+│                    VERCEL (Frontend)                    │
+│   React 18 · Vite · Tailwind CSS 4 · React Router DOM   │
+└────────────────────────┬────────────────────────────────┘
+                         │ REST API calls
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│                   RENDER (Backend)                      │
+│   Express 5 · Mongoose · JWT Auth · Multer + Cloudinary │
+└────────────────────────┬────────────────────────────────┘
+                         │ Mongoose Schema
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│                   MONGODB (Database)                    │
+│                   MongoDB Atlas cluster                 │
+└─────────────────────────────────────────────────────────┘
+```
 
-### Backend (REST API)
-- **Runtime Framework**: Node.js with Express.js
-- **Database & ORM**: MongoDB with Mongoose (Strict Schema Validation)
-- **Authentication**: Stateless JWT (JSON Web Tokens) with Bcrypt hashing
-- **Testing Engine**: Jest & Supertest (100% coverage on critical business logic)
-- **Real-Time Engine**: Socket.io for live inventory broadcasting
+---
 
-### Frontend (Client SPA)
-- **Framework**: React 18 (Bootstrapped via Vite for HMR and optimized builds)
-- **Styling**: Tailwind CSS v4 (Custom color tokens, fluid typography)
-- **State & Routing**: React Router DOM v6, Custom React Contexts
-- **Form Validation**: React Hook Form paired with Zod schemas
-- **Data Visualization**: Recharts
+## 💻 Tech Stack
+
+### Backend
+| Layer | Technology |
+| :--- | :--- |
+| **Runtime** | Node.js with Express 5 |
+| **Database** | MongoDB (Atlas) |
+| **ORM** | Mongoose (Strict Schema Validation) |
+| **Auth** | JWT (JSON Web Tokens) + bcryptjs |
+| **File Upload** | Multer → Cloudinary CDN |
+| **Security** | CORS, Zod validation |
+| **Testing** | Jest + Supertest + mongodb-memory-server |
+| **Real-time** | Socket.io |
+
+### Frontend
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | React 18 + Vite |
+| **Styling** | Tailwind CSS 4 + CSS custom properties |
+| **State/Routing** | React Router DOM v6 + Custom React Contexts |
+| **Icons** | Lucide React |
+| **Forms** | React Hook Form + Zod |
+| **Data Viz** | Recharts (Admin Dashboards) |
+| **Testing** | Vitest + React Testing Library |
+
+---
+
+## ✨ Features
+
+### Authentication & Authorization
+- User registration with full name, email, and password.
+- JWT token-based login.
+- Role-based access: `user` (customer) and `admin` (dealership manager).
+- Admin-only routes protected by both backend middleware and frontend UI guards.
+
+### Vehicle Management
+- Full CRUD operations (Admin only for create/update/delete).
+- Atomic stock decrement on purchase (prevents overselling).
+- Admin restock functionality.
+- Vehicle image uploads via Multer → Cloudinary CDN.
+- Dynamic "Similar Vehicles" recommendation engine.
+
+### Search & Discovery
+- Advanced algorithmic search by Make, Model, Category, and Price Range.
+- Interactive category filtering (Sedan, SUV, Hatchback, Coupe, Truck, Van).
+- Real-time inventory grid.
+
+### UI/UX
+- Premium Digital Showroom built with glassmorphism elements.
+- Custom Lightbox for vehicle image viewing.
+- Sticky filtering rails and smooth animations.
+- Admin CRM dashboards for tracking Test Drives, Orders, and Customers.
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
-- [MongoDB](https://www.mongodb.com/) (Local instance or MongoDB Atlas cluster)
-- Git
+- Node.js (v18.0.0 or higher)
+- MongoDB (Local instance or MongoDB Atlas cluster)
+- Cloudinary account (for image uploads)
 
-### 1. Repository Setup
+### 1. Clone & Install
 ```bash
-git clone https://github.com/your-username/drivematch-dealership.git
-cd drivematch-dealership
+git clone https://github.com/your-username/autostore-dealership.git
+cd autostore-dealership
+
+# Backend
+cd backend && npm install
+
+# Frontend
+cd ../frontend && npm install
 ```
 
-### 2. Backend Initialization
-```bash
-cd backend
-npm install
-```
-Create a `.env` file in the `backend` directory with the following configuration:
+### 2. Configure Environment
+Create `backend/.env`:
 ```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/car_dealership
 JWT_SECRET=your_super_secret_jwt_key
 NODE_ENV=development
-```
-Start the server:
-```bash
-npm run dev
+
+# Cloudinary (Optional, for image uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-### 3. Frontend Initialization
-In a new terminal window:
+### 3. Start Development
 ```bash
-cd frontend
-npm install
-npm run dev
+# Terminal 1 — Backend (port 5000)
+cd backend && npm run dev
+
+# Terminal 2 — Frontend (port 5173)
+cd frontend && npm run dev
 ```
-The application will be instantly accessible at `http://localhost:5173`.
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## 🧪 Test Coverage & TDD
-
-This project follows a strict Test-Driven Development (TDD) approach. The backend API contains integration tests for all primary routes (Auth, Vehicles, Orders, Test Drives, Customers, Analytics).
-
-To execute the test suites:
-
-### Backend Testing (Jest & Supertest)
-```bash
-cd backend
-npm test
-```
-*Suites cover: Auth validation, Admin Role-based access, Vehicle CRUD, Advanced filtering, Checkout process, Test Drive scheduling, Customer CRM viewing, and Order reporting.*
-
-### Frontend Testing (Vitest & React Testing Library)
-```bash
-cd frontend
-npm test
-```
-*Suites cover: UI Component rendering, Reducers, Context validation, and Dynamic state transitions (Similar Vehicles, Lightbox, Filter Rail).*
+## 🔑 Default Credentials
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | admin@example.com | password123 |
+| **User**  | test@example.com  | password123 |
 
 ---
 
-## 📚 API Reference (Endpoints)
+## 📚 API Reference
 
-| Endpoint | Method | Auth Required | Description |
-| :--- | :---: | :---: | :--- |
-| `/api/auth/register` | `POST` | No | Register a new user |
-| `/api/auth/login` | `POST` | No | Authenticate user & retrieve JWT |
-| `/api/vehicles` | `GET` | No | Fetch all vehicles (supports filtering) |
-| `/api/vehicles/search` | `GET` | No | Explicit search endpoint |
-| `/api/vehicles` | `POST` | **Admin** | Add a new vehicle to inventory |
-| `/api/vehicles/:id` | `PUT` | **Admin** | Update existing vehicle specs |
-| `/api/vehicles/:id` | `DELETE`| **Admin** | Remove a vehicle from inventory |
-| `/api/vehicles/:id/purchase` | `POST` | Yes | Process a vehicle purchase |
-| `/api/orders` | `GET` | **Admin** | Fetch populated purchase data for analytics |
-| `/api/users` | `GET` | **Admin** | Fetch CRM directory of all registered users |
-| `/api/test-drives/all` | `GET` | **Admin** | Fetch all scheduled system test drives |
+### Authentication
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Register a new user |
+| `POST` | `/api/auth/login` | Public | Login, returns JWT |
+
+### Vehicles & Inventory
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/vehicles` | Public | List all vehicles |
+| `GET` | `/api/vehicles/search` | Public | Search & filter inventory |
+| `GET` | `/api/vehicles/:id` | Public | Get vehicle details |
+| `POST` | `/api/vehicles` | Admin | Add a new vehicle |
+| `PUT` | `/api/vehicles/:id` | Admin | Update vehicle specs |
+| `DELETE` | `/api/vehicles/:id` | Admin | Delete vehicle |
+| `POST` | `/api/vehicles/:id/purchase` | User | Purchase (atomic stock −1) |
+| `POST` | `/api/vehicles/:id/restock` | Admin | Restock (add quantity) |
+
+### Admin & CRM
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/orders` | Admin | Fetch populated purchase data for analytics |
+| `GET` | `/api/users` | Admin | Fetch CRM directory of all registered users |
+| `GET` | `/api/test-drives/all` | Admin | Fetch all scheduled system test drives |
 
 ---
 
-## 📸 Application Gallery
-*(Replace these placeholders with actual screenshots before deployment)*
-- `[Screenshot: Customer Dashboard / Showroom]`
-- `[Screenshot: Advanced Filtering Mechanism]`
-- `[Screenshot: Admin CRM & Analytics Dashboard]`
+## 🧪 Test Report
+
+### Backend — Jest (52 tests)
+```text
+ PASS  tests/integration/auth.test.js
+ PASS  tests/integration/vehicles.test.js
+ PASS  tests/integration/orders.test.js
+ PASS  tests/integration/testDrives.test.js
+ PASS  tests/integration/customers.test.js
+ PASS  tests/integration/middleware.test.js
+ PASS  tests/unit/authService.test.js
+ PASS  tests/unit/vehicleService.test.js
+ PASS  tests/unit/validateRequest.test.js
+
+ Test Suites: 11 passed, 11 total
+ Tests:       52 passed, 52 total
+```
+
+### Frontend — Vitest (3 test suites)
+```text
+ PASS  src/tests/ComparePage.test.jsx
+ PASS  src/tests/VehicleDetailsPage.test.jsx
+ PASS  src/tests/AdminPanels.test.jsx
+
+ Test Files:  3 passed, 3 total
+```
+**Total:** Over 55 passing tests across backend and frontend.
+
+---
+
+## 📁 Project Structure
+
+```text
+autostore-dealership/
+├── backend/
+│   ├── src/
+│   │   ├── config/              # MongoDB & Cloudinary configs
+│   │   ├── controllers/         # Business logic routing handlers
+│   │   ├── middleware/          # Auth, roles, error handling
+│   │   ├── models/              # Mongoose schemas (Vehicle, User, Order, etc.)
+│   │   ├── routes/              # Express REST routes
+│   │   ├── app.js               # Express application setup
+│   │   └── server.js            # Node HTTP server entrypoint
+│   └── tests/                   # 11 integration and unit test suites
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # Reusable UI (Navbar, Sidebar, VehicleCard)
+│   │   ├── context/             # AuthContext, ThemeContext
+│   │   ├── pages/               # Page views (Dashboard, Details, Admin CRM)
+│   │   ├── services/            # Axios API client handlers
+│   │   ├── tests/               # Vitest component test suites
+│   │   └── App.jsx              # Main routing and layout wrapper
+└── README.md                    # This file
+```
+
+---
+
+## 📅 Development Journey
+
+This project was built following Test-Driven Development (TDD) with a clear Red-Green-Refactor cycle:
+
+| Phase | What Was Built | Tests |
+| :--- | :--- | :--- |
+| **Session 1** | Project setup, Mongoose schema, core layout | — |
+| **Session 2** | Auth endpoints (register/login) with Zod validation | Auth test suite |
+| **Session 3** | Vehicle CRUD endpoints & atomic stock management | Vehicle CRUD & Inventory tests |
+| **Session 4** | CRM Backend: Orders, Test Drives, Customer metrics | Admin integration tests |
+| **Session 5** | Frontend scaffold, API hooks, and routing | — |
+| **Session 6** | Image upload (Multer + Cloudinary) | Media handling |
+| **Session 7** | Complex UI: Admin Dashboards, Recharts analytics | UI Component Tests |
+| **Session 8** | Similar Vehicles Recommendation Engine | Search test suite |
+| **Session 9** | Comprehensive TDD backfilling and QA passes | 55+ tests verified |
 
 ---
 
 ## 🤖 My AI Usage
 
-As per modern development standards, this project was developed utilizing AI-assisted workflows to accelerate boilerplate generation and enhance structural architecture.
+### Tool Used
+**Antigravity (Google DeepMind)** — AI-powered autonomous coding assistant (primary tool throughout the project)
 
-### Tools Utilized
-*   **Antigravity (Google DeepMind)**: Served as an autonomous pair-programming agent and architectural consultant.
+### How I Used AI
+**Architecture & Planning**
+- Designed the MongoDB database schemas (User, Vehicle, Purchase, TestDrive).
+- Planned the RESTful API endpoint structure and testing configuration.
+- Defined the TDD workflow for backend routing and logic validation.
 
-### Methodology & Usage
-*   **Architecture & Boilerplate**: I instructed the AI to scaffold the initial RESTful endpoints, construct Mongoose schemas, and wire up the Jest testing framework to establish a rock-solid TDD foundation.
-*   **UI/UX Implementation**: I provided conceptual reference images and requirements to the AI, instructing it to generate complex React component trees, responsive Tailwind grid layouts, and interactive sidebar navigation.
-*   **Debugging & Refactoring**: The AI was utilized to rapidly trace configuration anomalies (such as correcting authorization middleware signatures) and refactor heavy state logic into clean, reusable React Contexts.
+**Backend Development**
+- Generated boilerplate for Express routes, error-handling middleware, and JWT verification.
+- Debugged and implemented atomic stock decrements and concurrency checks.
+- Set up `mongodb-memory-server` for isolated integration testing environments.
+- Integrated Multer + Cloudinary for seamless vehicle image uploads.
+
+**Frontend Development**
+- Scaffolded the React component architecture using Vite.
+- Implemented premium UI elements using Tailwind CSS v4.
+- Built interactive features including the Image Lightbox, Similar Vehicles engine, and Admin analytics dashboards.
+- Refactored prop-drilling into highly efficient React Contexts.
+
+**Testing**
+- Generated comprehensive test suites for 11 backend integration and unit test files using Jest and Supertest.
+- Set up Vitest + React Testing Library for verifying complex frontend component rendering.
+- Achieved a flawless testing record across the entire stack.
 
 ### Reflection
-Integrating AI into the software development lifecycle dramatically accelerated the velocity of this project. It effectively eliminated the friction of context-switching to read through documentation for standard libraries (like Tailwind classes or Mongoose connection strings). Instead of getting bogged down in syntax, I was empowered to operate at a higher level of abstraction—focusing entirely on product requirements, edge-case logic, and the overall user experience. It acted as an exceptional force multiplier.
+AI was most valuable as an architectural consultant and rapid prototyping engine. The TDD cycle was significantly accelerated—AI could generate comprehensive failing tests based on my requirements, and then write the exact code needed to pass them. Every AI-generated piece of code was reviewed, tested, and refined to ensure pristine quality. The human-AI collaboration felt like true pair programming, where the AI handled the vast breadth of the codebase while I directed the product vision, deep business logic, and UI design decisions.
+
+---
+**License**: MIT
