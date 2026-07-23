@@ -1,4 +1,4 @@
-# 🏎️ AutoStore — Car Dealership Inventory System
+<img width="1882" height="901" alt="image" src="https://github.com/user-attachments/assets/117347bf-5d65-49ad-94d1-61e22f926190" /># 🏎️ AutoStore — Car Dealership Inventory System
 
 A full-stack modern car marketplace built with TDD methodology
 
@@ -6,15 +6,6 @@ A full-stack modern car marketplace built with TDD methodology
 
 ---
 
-## 📸 Screenshots
-
-*(Replace these placeholders with actual screenshots before deployment)*
-- `[Hero Section]`
-- `[Category Filter & Advanced Search]`
-- `[Vehicle Details & Similar Cars]`
-- `[Admin Dashboard - Orders & Test Drives]`
-
----
 
 ## 🏗️ Architecture
 
