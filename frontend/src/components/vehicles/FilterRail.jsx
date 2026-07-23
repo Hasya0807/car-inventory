@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 
-export const FilterRail = ({ filters, onFilterChange, onClear }) => {
+export const FilterRail = ({ filters, onFilterChange, onClear, meta }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onFilterChange(name, value);
@@ -43,22 +43,25 @@ export const FilterRail = ({ filters, onFilterChange, onClear }) => {
               className="w-full appearance-none bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
             >
               <option value="">Select Brand</option>
-              <option value="Toyota">Toyota</option>
-              <option value="Chevrolet">Chevrolet</option>
-              <option value="Tesla">Tesla</option>
-              <option value="BMW">BMW</option>
-              <option value="Hyundai">Hyundai</option>
+              {meta?.makes?.map(make => (
+                <option key={make} value={make}>{make}</option>
+              ))}
             </select>
             <ChevronDown size={16} className="absolute right-4 top-3.5 text-text-muted pointer-events-none" />
           </div>
           
-          {/* Mock Model Dropdown */}
           <div className="relative flex-1">
             <select 
-              className="w-full appearance-none bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-              disabled
+              name="model"
+              value={filters.model || ''}
+              onChange={handleChange}
+              className="w-full appearance-none bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer disabled:opacity-50"
+              disabled={!meta?.models || meta?.models.length === 0}
             >
               <option value="">Choose Model</option>
+              {meta?.models?.map(model => (
+                <option key={model} value={model}>{model}</option>
+              ))}
             </select>
             <ChevronDown size={16} className="absolute right-4 top-3.5 text-text-muted pointer-events-none" />
           </div>
@@ -66,13 +69,64 @@ export const FilterRail = ({ filters, onFilterChange, onClear }) => {
 
         {/* Budget Range */}
         <div>
-          <h3 className="text-base font-medium text-text-main mb-4">Budget Range</h3>
-          {/* Fake range slider track to match UI */}
-          <div className="relative h-1 bg-surface rounded-full mb-6 mt-2">
-            <div className="absolute left-1/4 right-1/4 h-full bg-primary rounded-full"></div>
-            <div className="absolute left-1/4 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow"></div>
-            <div className="absolute right-1/4 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow"></div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-base font-medium text-text-main">Budget Range</h3>
           </div>
+          
+          {(() => {
+            const minLimit = meta?.minPrice || 0;
+            const maxLimit = meta?.maxPrice || 10000000;
+            const currentMin = filters.minPrice !== undefined && filters.minPrice !== '' ? Number(filters.minPrice) : minLimit;
+            const currentMax = filters.maxPrice !== undefined && filters.maxPrice !== '' ? Number(filters.maxPrice) : maxLimit;
+            
+            const leftPercent = Math.max(0, Math.min(100, ((currentMin - minLimit) / (maxLimit - minLimit || 1)) * 100));
+            const rightPercent = Math.max(0, Math.min(100, ((currentMax - minLimit) / (maxLimit - minLimit || 1)) * 100));
+
+            const sliderClassName = "absolute top-0 w-full h-2 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:cursor-pointer";
+
+            return (
+              <div className="relative w-full h-2 bg-surface rounded-lg mb-8 mt-2">
+                {/* Colored Track */}
+                <div 
+                  className="absolute h-full bg-primary rounded-lg"
+                  style={{ left: `${leftPercent}%`, width: `${rightPercent - leftPercent}%` }}
+                ></div>
+                
+                {/* Min Thumb */}
+                <input
+                  type="range"
+                  name="minPrice"
+                  min={minLimit}
+                  max={maxLimit}
+                  step="10000"
+                  value={currentMin}
+                  onChange={(e) => {
+                    const val = Math.min(Number(e.target.value), currentMax);
+                    onFilterChange('minPrice', val);
+                  }}
+                  className={sliderClassName}
+                  style={{ zIndex: currentMin > maxLimit - 10000 ? 5 : 3 }}
+                />
+
+                {/* Max Thumb */}
+                <input
+                  type="range"
+                  name="maxPrice"
+                  min={minLimit}
+                  max={maxLimit}
+                  step="10000"
+                  value={currentMax}
+                  onChange={(e) => {
+                    const val = Math.max(Number(e.target.value), currentMin);
+                    onFilterChange('maxPrice', val);
+                  }}
+                  className={sliderClassName}
+                  style={{ zIndex: 4 }}
+                />
+              </div>
+            );
+          })()}
+          
           <div className="flex gap-4">
             <div className="flex-1 relative">
               <input 
@@ -80,8 +134,8 @@ export const FilterRail = ({ filters, onFilterChange, onClear }) => {
                 name="minPrice"
                 value={filters.minPrice || ''}
                 onChange={handleChange}
-                placeholder="0.00"
-                className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm font-medium text-text-main focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Min Price"
+                className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm font-medium text-text-main focus:outline-none focus:ring-2 focus:ring-primary pr-8"
               />
               <span className="absolute right-4 top-3.5 text-text-muted font-medium">₹</span>
             </div>
@@ -90,8 +144,8 @@ export const FilterRail = ({ filters, onFilterChange, onClear }) => {
                 type="number" 
                 name="maxPrice"
                 value={filters.maxPrice || ''}
-                onChange={(e) => onFilterChange('maxPrice', e.target.value)}
-                placeholder="Max"
+                onChange={handleChange}
+                placeholder="Max Price"
                 className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary pr-8"
               />
               <span className="absolute right-4 top-3.5 text-text-muted font-medium">₹</span>

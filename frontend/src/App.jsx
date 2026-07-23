@@ -10,6 +10,8 @@ import { AdminPage } from './pages/AdminPage';
 import { CustomerDashboard } from './pages/CustomerDashboard';
 import { ComparePage } from './pages/ComparePage';
 import { AdminAnalytics } from './pages/AdminAnalytics';
+import { FavoritesPage } from './pages/FavoritesPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 import { AppLayout } from './components/layout/AppLayout';
 
@@ -26,6 +28,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           {/* Customer Routes */}
           <Route path="/dashboard" element={<CustomerDashboard />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/compare" element={<ComparePage />} />
           
           <Route element={<AdminRoute />}>

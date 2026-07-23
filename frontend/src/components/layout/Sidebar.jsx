@@ -9,11 +9,10 @@ export const Sidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     { icon: Home, label: 'Dashboard', path: '/dashboard', authRequired: true },
+    ...(user?.role === 'admin' ? [{ icon: Box, label: 'Admin Panel', path: '/admin', authRequired: true }] : []),
     { icon: CarFront, label: 'Inventory', path: '/' },
     { icon: Calendar, label: 'Compare', path: '/compare', authRequired: true },
-    { icon: Heart, label: 'Wishlist', path: '/dashboard?tab=wishlist', authRequired: true },
-    { icon: HelpCircle, label: 'Support', path: '#' },
-    { icon: Settings, label: 'Settings', path: '#' },
+    { icon: Heart, label: 'Wishlist', path: '/favorites', authRequired: true },
   ];
 
   return (
@@ -43,26 +42,6 @@ export const Sidebar = ({ isOpen, onClose }) => {
         {navItems.map((item) => {
           if (item.authRequired && !user) return null;
           
-          if (item.label === 'Support') {
-             return (
-               <React.Fragment key={item.label}>
-                 <div className="w-8 h-px bg-border my-2 self-center md:self-auto hidden md:block"></div>
-                 <div className="w-full h-px bg-border my-2 block md:hidden"></div>
-                 <NavLink
-                    to={item.path}
-                    className={({ isActive }) => 
-                      `flex items-center gap-4 w-full md:w-auto p-3 md:rounded-full rounded-xl transition-all duration-200 ${isActive && item.path !== '#' ? 'bg-primary text-gray-900' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
-                    }
-                    title={item.label}
-                    onClick={onClose}
-                  >
-                    <item.icon size={22} strokeWidth={2} className="shrink-0" />
-                    <span className="md:hidden font-medium">{item.label}</span>
-                  </NavLink>
-               </React.Fragment>
-             )
-          }
-
           return (
             <NavLink
               key={item.label}
@@ -78,19 +57,22 @@ export const Sidebar = ({ isOpen, onClose }) => {
             </NavLink>
           );
         })}
-      </nav>
 
-      {/* Logout */}
-      {user && (
-        <button 
-          onClick={() => { logout(); onClose(); }}
-          className="flex items-center gap-4 w-[calc(100%-3rem)] md:w-auto p-3 text-text-muted hover:bg-red-50 hover:text-red-500 rounded-xl md:rounded-full transition-colors mt-auto"
-          title="Logout"
-        >
-          <LogOut size={22} strokeWidth={2.5} className="shrink-0" />
-          <span className="md:hidden font-medium">Logout</span>
-        </button>
-      )}
+        {/* Push Settings to the bottom */}
+        {user && (
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => 
+              `mt-auto flex items-center gap-4 w-full md:w-auto p-3 md:rounded-full rounded-xl transition-all duration-200 ${isActive ? 'bg-primary text-gray-900 shadow-md' : 'text-text-muted hover:bg-surface hover:text-text-main'}`
+            }
+            title="Settings"
+            onClick={onClose}
+          >
+            <Settings size={22} strokeWidth={2.5} className="shrink-0" />
+            <span className="md:hidden font-medium">Settings</span>
+          </NavLink>
+        )}
+      </nav>
     </aside>
   );
 };

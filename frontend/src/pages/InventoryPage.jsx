@@ -62,6 +62,7 @@ export const InventoryPage = () => {
             filters={filters} 
             onFilterChange={updateFilter} 
             onClear={clearFilters} 
+            meta={meta}
           />
         </div>
         

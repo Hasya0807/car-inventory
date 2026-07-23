@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import vehicleService from '../services/vehicle.service';
 import { useToast } from '../context/ToastContext';
 import { formatCurrency } from '../utils/formatCurrency';
-import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin } from 'lucide-react';
+import { Heart, Maximize, ShieldCheck, Wrench, Navigation, CreditCard, Car, Fuel, Settings2, Users, MapPin, Calendar as CalendarIcon, FileText } from 'lucide-react';
 import { cn } from '../context/ToastContext';
+import { Modal } from '../components/ui/Modal';
 
 export const VehicleDetailsPage = () => {
   const { id } = useParams();
@@ -15,8 +17,38 @@ export const VehicleDetailsPage = () => {
   
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState('');
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [contactNumber, setContactNumber] = useState('');
+
+  const TIME_SLOTS = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+  ];
 
   const isWishlisted = wishlistedIds?.has(id);
+
+  useEffect(() => {
+    if (selectedDate && id) {
+      const fetchSlots = async () => {
+        try {
+          const res = await api.get(`/test-drives/${id}/booked-slots?date=${selectedDate}`);
+          if (res.data && res.data.success) {
+            setBookedSlots(res.data.data);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchSlots();
+    } else {
+      setBookedSlots([]);
+    }
+  }, [selectedDate, id]);
 
   useEffect(() => {
     const fetchVehicle = async () => {
@@ -45,18 +77,48 @@ export const VehicleDetailsPage = () => {
     fetchVehicle();
   }, [id, navigate, addToast]);
 
+  const handleTestDriveSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      addToast('Please log in to book test drives.', 'error');
+      navigate('/login');
+      return;
+    }
+    
+    if (!selectedDate || !selectedSlot || !contactNumber) {
+      addToast('Please fill all fields', 'error');
+      return;
+    }
+
+    try {
+      await api.post('/test-drives/book', {
+        vehicleId: id,
+        date: selectedDate,
+        slot: selectedSlot,
+        contactNumber
+      });
+      addToast('Test drive scheduled successfully! A dealer will contact you.', 'success');
+      setIsTestDriveOpen(false);
+      setSelectedDate('');
+      setSelectedSlot('');
+      setContactNumber('');
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to schedule test drive', 'error');
+    }
+  };
+
   const handlePurchase = async () => {
     if (!user) {
       addToast('Please log in to purchase vehicles.', 'error');
       navigate('/login');
       return;
     }
-    
     try {
       await vehicleService.purchaseVehicle(id, 1);
       addToast('Vehicle purchased successfully!', 'success');
-      const data = await vehicleService.getVehicleById(id);
-      setVehicle(data);
+      // Update local state temporarily to reflect purchase
+      setVehicle(prev => ({ ...prev, quantity: prev.quantity - 1 }));
+      navigate('/dashboard?tab=orders');
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to purchase vehicle', 'error');
     }
@@ -203,22 +265,39 @@ export const VehicleDetailsPage = () => {
           </div>
           
           {/* Purchase Footer inside the card */}
-          <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
-            <div className="text-sm font-medium text-text-muted">
-              Ready to buy?
+          <div className="mt-8 pt-6 border-t border-border flex flex-col gap-4">
+            <div className="text-sm font-medium text-text-muted mb-2">
+              Interested in this vehicle?
             </div>
-            <button 
-              onClick={handlePurchase}
-              disabled={isOutOfStock}
-              className={cn(
-                "px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-                isOutOfStock 
-                  ? "bg-surface text-text-muted border border-border cursor-not-allowed shadow-none" 
-                  : "bg-primary text-gray-900 hover:bg-primary-dark hover:shadow-md hover:scale-105"
-              )}
-            >
-              {isOutOfStock ? 'Sold Out' : 'Purchase Vehicle'}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button 
+                onClick={() => setIsTestDriveOpen(true)}
+                disabled={isOutOfStock}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                  isOutOfStock 
+                    ? "bg-surface text-text-muted border border-border cursor-not-allowed shadow-none" 
+                    : "bg-surface text-text-main border border-border hover:bg-card hover:shadow-md"
+                )}
+              >
+                <CalendarIcon size={18} />
+                {isOutOfStock ? 'Unavailable' : 'Book Test Drive'}
+              </button>
+              
+              <button 
+                onClick={handlePurchase}
+                disabled={isOutOfStock}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                  isOutOfStock 
+                    ? "bg-surface text-text-muted border border-border cursor-not-allowed shadow-none" 
+                    : "bg-primary text-gray-900 hover:bg-primary-dark hover:shadow-md hover:scale-105"
+                )}
+              >
+                <FileText size={18} />
+                {isOutOfStock ? 'Sold Out' : 'Purchase'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -249,7 +328,7 @@ export const VehicleDetailsPage = () => {
             <img 
               src={vehicle.imageUrl} 
               alt={`${vehicle.make} ${vehicle.model}`} 
-              className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl scale-110" 
+              className="w-full h-full object-contain drop-shadow-2xl scale-110" 
             />
           ) : (
             <div className="text-text-muted opacity-20 flex flex-col items-center">
@@ -263,25 +342,98 @@ export const VehicleDetailsPage = () => {
         <div className="bg-card p-6 rounded-3xl border border-border shadow-sm flex-1 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-text-main">Dealership Location</h3>
-            <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:text-text-main transition-colors">
+            <button 
+              onClick={() => window.open('https://maps.google.com/?q=Los+Angeles+CA', '_blank')}
+              className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:text-text-main transition-colors"
+            >
                <Maximize size={14} />
             </button>
           </div>
           <div className="flex-1 bg-surface rounded-2xl overflow-hidden relative min-h-[250px]">
-            {/* Map Placeholder Image */}
-            <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Los+Angeles,CA&zoom=13&size=800x400&maptype=roadmap&sensor=false')] bg-cover bg-center opacity-70 grayscale"></div>
-            {/* Custom overlay marker */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center hover:-translate-y-2 transition-transform cursor-pointer">
-              <div className="bg-card text-text-main font-bold text-sm px-5 py-2.5 rounded-full shadow-lg flex items-center gap-2 mb-1 border border-border">
-                <MapPin size={18} className="text-primary-dark" />
-                DriveMatch Showroom
-              </div>
-              <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-card drop-shadow-md"></div>
-            </div>
+            <iframe 
+              src="https://maps.google.com/maps?q=Los+Angeles,+CA&t=&z=13&ie=UTF8&iwloc=&output=embed" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0, minHeight: '250px' }} 
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Dealership Location"
+            ></iframe>
           </div>
         </div>
 
       </div>
+
+      <Modal isOpen={isTestDriveOpen} onClose={() => setIsTestDriveOpen(false)} title="Schedule a Test Drive">
+        <form onSubmit={handleTestDriveSubmit} className="space-y-4">
+          <p className="text-sm text-text-muted mb-4">Select a date and time that works for you. Our team will contact you to confirm.</p>
+          <div>
+            <label className="block text-sm font-medium text-text-muted mb-1">Preferred Date</label>
+            <input 
+              type="date" 
+              required 
+              min={new Date().toISOString().split('T')[0]}
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                setSelectedSlot(''); // Reset slot when date changes
+              }}
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary" 
+            />
+          </div>
+          
+          {selectedDate && (
+            <div>
+              <label className="block text-sm font-medium text-text-muted mb-2">Select Time Slot</label>
+              <div className="grid grid-cols-3 gap-2 max-h-[200px] overflow-y-auto hide-scrollbar pr-2">
+                {TIME_SLOTS.map(slot => {
+                  const isBooked = bookedSlots.includes(slot);
+                  const isSelected = selectedSlot === slot;
+                  
+                  return (
+                    <button
+                      key={slot}
+                      type="button"
+                      disabled={isBooked}
+                      onClick={() => setSelectedSlot(slot)}
+                      className={cn(
+                        "py-2 px-3 rounded-lg text-sm font-medium transition-colors border",
+                        isBooked 
+                          ? "bg-surface text-text-muted border-border cursor-not-allowed opacity-50" 
+                          : isSelected 
+                            ? "bg-primary text-gray-900 border-primary" 
+                            : "bg-card text-text-main border-border hover:border-primary hover:text-primary"
+                      )}
+                    >
+                      {slot}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-text-muted mb-1 mt-2">Contact Number</label>
+            <input 
+              type="tel" 
+              placeholder="+1 (555) 000-0000" 
+              required 
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary" 
+            />
+          </div>
+          <button 
+            type="submit" 
+            disabled={!selectedDate || !selectedSlot}
+            className="w-full bg-primary text-gray-900 font-bold py-3 rounded-xl hover:bg-primary-dark transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Request Test Drive
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 };

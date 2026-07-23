@@ -50,6 +50,14 @@ const escapeRegex = (text) => {
 
 const buildVehicleQuery = (filters) => {
   const query = {};
+  if (filters.search) {
+    const searchRegex = new RegExp(escapeRegex(filters.search), 'i');
+    query.$or = [
+      { make: searchRegex },
+      { model: searchRegex },
+      { category: searchRegex }
+    ];
+  }
   if (filters.make) query.make = { $regex: escapeRegex(filters.make), $options: 'i' };
   if (filters.model) query.model = { $regex: escapeRegex(filters.model), $options: 'i' };
   if (filters.category) query.category = filters.category;
@@ -86,11 +94,23 @@ const getVehicles = async (filters, page = 1, limit = 10, sort = 'price_asc') =>
     .skip(skip)
     .limit(Number(limit));
 
+  const makes = await Vehicle.distinct('make');
+  const minPriceDoc = await Vehicle.findOne().sort({ price: 1 }).select('price');
+  const maxPriceDoc = await Vehicle.findOne().sort({ price: -1 }).select('price');
+  
+  // For models, we can either return all models, or if a make filter is selected, models for that make.
+  const modelQuery = filters.make ? { make: { $regex: new RegExp(`^${filters.make}$`, 'i') } } : {};
+  const models = await Vehicle.distinct('model', modelQuery);
+
   return {
     vehicles,
     page: Number(page),
     totalPages: Math.ceil(totalCount / limit),
-    totalCount
+    totalCount,
+    makes,
+    models,
+    minPrice: minPriceDoc ? minPriceDoc.price : 0,
+    maxPrice: maxPriceDoc ? maxPriceDoc.price : 10000000
   };
 };
 

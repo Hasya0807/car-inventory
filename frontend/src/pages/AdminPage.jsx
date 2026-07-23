@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useVehicles } from '../hooks/useVehicles';
 import { VehicleGrid } from '../components/vehicles/VehicleGrid';
-import { Navbar } from '../components/layout/Navbar';
 import { Modal } from '../components/ui/Modal';
 import { VehicleForm } from '../components/vehicles/VehicleForm';
 import { Pagination } from '../components/vehicles/Pagination';
 import vehicleService from '../services/vehicle.service';
 import { useToast } from '../context/ToastContext';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Box } from 'lucide-react';
 
 export const AdminPage = () => {
   const { vehicles, loading, meta, filters, updateFilter, setPage, refresh } = useVehicles();
@@ -92,39 +91,47 @@ export const AdminPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-asphalt flex flex-col">
-      <Navbar />
-      
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8 pb-6 border-b border-gray-800">
-          <div>
-            <h1 className="text-3xl font-display font-bold text-chrome">Admin Dashboard</h1>
-            <p className="text-sm text-graphite mt-1">Manage inventory, stock levels, and vehicle listings.</p>
+    <div className="w-full bg-surface min-h-[80vh]">
+      {/* Admin Dashboard Header */}
+      <div className="bg-card border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center text-primary-dark border-4 border-surface shadow-sm shrink-0">
+               <Box size={40} />
+            </div>
+            <div>
+              <h1 className="text-3xl font-display font-bold text-text-main mb-1">Admin Control Panel</h1>
+              <p className="text-text-muted text-sm flex items-center justify-center md:justify-start gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span> Dealership Operations
+              </p>
+            </div>
           </div>
           
-          <div className="flex items-center gap-4 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 md:mt-0">
             <form onSubmit={handleSearchSubmit} className="flex-1 sm:flex-none relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search size={16} className="text-graphite" />
+                <Search size={16} className="text-text-muted" />
               </div>
               <input
                 type="text"
-                placeholder="Search by VIN or make..."
+                placeholder="Search inventory..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-64 bg-charcoal border border-gray-700 rounded pl-10 pr-3 py-2 text-sm text-chrome focus:outline-none focus:border-ignition focus:ring-1 focus:ring-ignition"
+                className="w-full sm:w-64 bg-surface border border-border rounded-xl pl-10 pr-3 py-3 text-sm text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
               />
             </form>
             
             <button 
               onClick={openAddModal}
-              className="flex items-center gap-2 bg-chrome text-asphalt px-4 py-2 text-sm font-bold rounded hover:bg-white transition-colors"
+              className="flex items-center justify-center gap-2 bg-primary text-gray-900 px-6 py-3 text-sm font-bold rounded-xl hover:bg-primary-dark transition-colors shadow-sm whitespace-nowrap"
             >
-              <Plus size={16} /> Add Vehicle
+              <Plus size={18} /> Add Vehicle
             </button>
           </div>
         </div>
+      </div>
 
+      <main className="max-w-7xl w-full mx-auto px-4 md:px-6 py-8">
         <VehicleGrid 
           vehicles={vehicles} 
           loading={loading} 
@@ -132,7 +139,9 @@ export const AdminPage = () => {
           onEdit={openEditModal}
         />
         
-        <Pagination meta={meta} onPageChange={setPage} />
+        <div className="mt-8">
+          <Pagination meta={meta} onPageChange={setPage} />
+        </div>
       </main>
 
       {/* Vehicle Form Modal */}
@@ -147,16 +156,16 @@ export const AdminPage = () => {
           onCancel={() => setIsFormOpen(false)}
         />
         {editingVehicle && (
-          <div className="mt-4 pt-4 border-t border-gray-800 flex justify-between items-center">
+          <div className="mt-4 pt-4 border-t border-border flex justify-between items-center">
             <button 
               onClick={() => { setIsFormOpen(false); openRestockModal(editingVehicle._id); }}
-              className="text-status-green hover:text-green-400 text-sm font-medium transition-colors"
+              className="text-green-500 hover:text-green-400 text-sm font-medium transition-colors"
             >
               + Restock Inventory
             </button>
             <button 
               onClick={handleDelete}
-              className="text-ignition hover:text-red-400 text-sm font-medium transition-colors"
+              className="text-red-500 hover:text-red-400 text-sm font-medium transition-colors"
             >
               Delete Vehicle
             </button>
@@ -173,14 +182,14 @@ export const AdminPage = () => {
         {restockVehicle && (
           <form onSubmit={handleRestockSubmit}>
             <div className="mb-6">
-              <p className="text-chrome mb-1">
+              <p className="text-text-main mb-1">
                 <span className="font-bold">{restockVehicle.make} {restockVehicle.model}</span>
               </p>
-              <p className="text-sm text-graphite mb-4">
-                Current stock: <span className="font-mono text-chrome">{restockVehicle.quantity}</span>
+              <p className="text-sm text-text-muted mb-4">
+                Current stock: <span className="font-mono text-text-main">{restockVehicle.quantity}</span>
               </p>
               
-              <label className="block text-sm text-graphite mb-1">Quantity to Add</label>
+              <label className="block text-sm text-text-muted mb-1">Quantity to Add</label>
               <div className="flex items-center gap-2">
                 <input 
                   type="number"
@@ -188,23 +197,23 @@ export const AdminPage = () => {
                   required
                   value={restockQuantity}
                   onChange={(e) => setRestockQuantity(parseInt(e.target.value) || 1)}
-                  className="w-32 bg-asphalt border border-gray-700 rounded px-3 py-2 text-chrome font-mono focus:outline-none focus:border-status-green focus:ring-1 focus:ring-status-green"
+                  className="w-32 bg-surface border border-border rounded-xl px-3 py-2 text-text-main font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                 />
-                <span className="text-sm text-graphite">units</span>
+                <span className="text-sm text-text-muted">units</span>
               </div>
             </div>
             
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-800">
+            <div className="flex justify-end gap-3 pt-6 border-t border-border">
               <button 
                 type="button"
                 onClick={() => setIsRestockOpen(false)}
-                className="px-4 py-2 text-sm text-chrome bg-gray-800 hover:bg-gray-700 rounded font-medium transition-colors"
+                className="px-6 py-2.5 text-sm text-text-main bg-surface border border-border hover:bg-card rounded-xl font-bold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-600"
               >
                 Cancel
               </button>
               <button 
                 type="submit"
-                className="px-4 py-2 text-sm text-asphalt bg-status-green hover:bg-green-400 rounded font-medium transition-colors"
+                className="px-6 py-2.5 text-sm text-gray-900 bg-primary hover:bg-primary-dark rounded-xl font-bold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 Confirm Restock
               </button>

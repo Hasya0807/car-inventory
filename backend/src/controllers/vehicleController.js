@@ -17,15 +17,19 @@ const createVehicle = async (req, res, next) => {
 
 const getVehicles = async (req, res, next) => {
   try {
-    const { page, limit, sort, make, model, category, minPrice, maxPrice, fuel, transmission, inStock } = req.query;
+    const { page, limit, sort, make, model, category, minPrice, maxPrice, fuel, transmission, inStock, search } = req.query;
     
-    const filters = { make, model, category, minPrice, maxPrice, fuel, transmission, inStock };
+    const filters = { make, model, category, minPrice, maxPrice, fuel, transmission, inStock, search };
     const result = await vehicleService.getVehicles(filters, page, limit, sort);
 
     res.status(200).json({ success: true, data: result.vehicles, metadata: {
       page: result.page,
       totalPages: result.totalPages,
-      totalCount: result.totalCount
+      totalCount: result.totalCount,
+      makes: result.makes,
+      models: result.models,
+      minPrice: result.minPrice,
+      maxPrice: result.maxPrice
     }});
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -33,8 +33,27 @@ router.post('/vehicles/:id/wishlist', protect, async (req, res, next) => {
 router.get('/wishlist', protect, async (req, res, next) => {
   try {
     const items = await Wishlist.find({ userId: req.user._id }).populate('vehicleId');
-    const vehicles = items.map(item => item.vehicleId);
+    const vehicles = items.map(item => item.vehicleId).filter(Boolean);
     res.status(200).json({ success: true, data: vehicles });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get User Purchases
+router.get('/purchases/me', protect, async (req, res, next) => {
+  try {
+    // Import Purchase inside if it wasn't at top, or just use the mongoose model.
+    // Actually we need to require it at the top, but we can do it here:
+    const Purchase = require('../models/Purchase');
+    const purchases = await Purchase.find({ userId: req.user._id })
+      .populate('vehicleId')
+      .sort({ purchaseDate: -1 });
+    
+    // Filter out purchases where the vehicle was deleted
+    const validPurchases = purchases.filter(p => p.vehicleId);
+    
+    res.status(200).json({ success: true, data: validPurchases });
   } catch (error) {
     next(error);
   }

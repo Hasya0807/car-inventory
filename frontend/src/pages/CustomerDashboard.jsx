@@ -14,6 +14,8 @@ export const CustomerDashboard = () => {
 
   const [wishlist, setWishlist] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [purchases, setPurchases] = useState([]);
+  const [testDrives, setTestDrives] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(initialTab);
 
@@ -28,10 +30,20 @@ export const CustomerDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const wishlistRes = await api.get('/wishlist').catch(() => null);
+        const [wishlistRes, purchasesRes, testDrivesRes] = await Promise.all([
+          api.get('/wishlist').catch(() => null),
+          api.get('/purchases/me').catch(() => null),
+          api.get('/test-drives/me').catch(() => null)
+        ]);
 
         if (wishlistRes && wishlistRes.data.success) {
           setWishlist(wishlistRes.data.data);
+        }
+        if (purchasesRes && purchasesRes.data.success) {
+          setPurchases(purchasesRes.data.data);
+        }
+        if (testDrivesRes && testDrivesRes.data.success) {
+          setTestDrives(testDrivesRes.data.data);
         }
       } catch (e) {
         console.error(e);
@@ -59,7 +71,6 @@ export const CustomerDashboard = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={18} /> },
-    { id: 'wishlist', label: 'My Garage (Saved)', icon: <Heart size={18} /> },
     { id: 'recent', label: 'Recently Viewed', icon: <Clock size={18} /> },
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
   ];
@@ -143,15 +154,14 @@ export const CustomerDashboard = () => {
                   <div className="text-4xl font-display font-bold text-text-main">{recentlyViewed.length}</div>
                 </div>
         
-                <div className="bg-card p-6 rounded-3xl border border-border shadow-sm flex flex-col justify-center opacity-50 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-surface/50 backdrop-blur-[1px] flex items-center justify-center font-bold text-sm text-text-main opacity-0 group-hover:opacity-100 transition-opacity">Coming Soon</div>
+                <div className="bg-card p-6 rounded-3xl border border-border shadow-sm flex flex-col justify-center">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm font-bold text-text-muted uppercase tracking-wider">Orders</div>
+                    <div className="text-sm font-bold text-text-muted uppercase tracking-wider">Orders & Bookings</div>
                     <div className="w-10 h-10 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
                        <Package size={20} />
                     </div>
                   </div>
-                  <div className="text-4xl font-display font-bold text-text-main">0</div>
+                  <div className="text-4xl font-display font-bold text-text-main">{purchases.length + testDrives.length}</div>
                 </div>
               </div>
 
@@ -159,8 +169,10 @@ export const CustomerDashboard = () => {
               {wishlist.length > 0 && (
                 <div className="bg-card p-8 rounded-3xl border border-border shadow-sm">
                   <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-text-main">Recent Additions to Garage</h2>
-                    <button onClick={() => setActiveTab('wishlist')} className="text-sm font-bold text-primary-dark hover:underline">View All &rarr;</button>
+                    <h2 className="text-xl font-bold text-text-main flex items-center gap-2">
+                      <Heart size={20} className="text-red-500" />
+                      Recent Additions to Garage
+                    </h2>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {wishlist.slice(0, 2).map(vehicle => (
@@ -169,29 +181,38 @@ export const CustomerDashboard = () => {
                   </div>
                 </div>
               )}
-            </div>
-          )}
 
-          {/* WISHLIST TAB */}
-          {activeTab === 'wishlist' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <h2 className="text-2xl font-bold text-text-main mb-6">My Garage (Saved Vehicles)</h2>
-              {wishlist.length === 0 ? (
-                <div className="bg-card rounded-3xl p-10 md:p-16 text-center border border-border border-dashed flex flex-col items-center">
-                  <Car size={64} className="text-border mb-6" />
-                  <h3 className="text-xl font-bold text-text-main mb-2">Your garage is empty</h3>
-                  <p className="text-text-muted max-w-md mb-8">
-                    Keep track of the cars you love. Click the heart icon on any vehicle in the inventory to park it here.
-                  </p>
-                  <Link to="/" className="bg-primary text-gray-900 font-bold px-8 py-3 rounded-full hover:bg-primary-dark transition-colors shadow-sm">
-                    Explore Inventory
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {wishlist.map(vehicle => (
-                    <VehicleCard key={vehicle._id} vehicle={vehicle} />
-                  ))}
+              {/* Mini Preview of Test Drives */}
+              {testDrives.length > 0 && (
+                <div className="bg-card p-8 rounded-3xl border border-border shadow-sm">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-text-main flex items-center gap-2">
+                      <Clock size={20} className="text-blue-500" />
+                      Upcoming Appointments
+                    </h2>
+                    <button onClick={() => setActiveTab('orders')} className="text-sm font-bold text-primary hover:underline">View All &rarr;</button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {testDrives.slice(0, 2).map(drive => (
+                      <div key={drive._id} className="bg-surface rounded-2xl border border-border p-4 flex gap-4 shadow-sm items-center">
+                        {drive.vehicleId?.imageUrl ? (
+                          <img src={drive.vehicleId.imageUrl} alt={drive.vehicleId?.make} className="w-20 h-20 object-contain rounded-lg bg-card" />
+                        ) : (
+                          <div className="w-20 h-20 bg-card rounded-lg flex items-center justify-center text-text-muted">
+                            <Car size={24} />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h4 className="font-bold text-text-main line-clamp-1">{drive.vehicleId?.make} {drive.vehicleId?.model}</h4>
+                          <div className="text-sm font-medium text-text-muted mt-1">{new Date(drive.date).toLocaleDateString()}</div>
+                          <div className="text-primary font-bold mt-0.5">{drive.slot}</div>
+                        </div>
+                        <div className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/10 text-blue-500">
+                          {drive.status || 'Scheduled'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -223,13 +244,67 @@ export const CustomerDashboard = () => {
           {activeTab === 'orders' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h2 className="text-2xl font-bold text-text-main mb-6">My Orders & Test Drives</h2>
-              <div className="bg-card rounded-3xl p-10 md:p-16 text-center border border-border border-dashed flex flex-col items-center">
-                <Package size={64} className="text-border mb-6" />
-                <h3 className="text-xl font-bold text-text-main mb-2">Order History</h3>
-                <p className="text-text-muted max-w-md">
-                  You haven't placed any vehicle reservations or scheduled test drives yet. When you do, you'll be able to track them all right here.
-                </p>
-              </div>
+              
+              {purchases.length === 0 && testDrives.length === 0 ? (
+                <div className="bg-card rounded-3xl p-10 md:p-16 text-center border border-border border-dashed flex flex-col items-center">
+                  <Package size={64} className="text-border mb-6" />
+                  <h3 className="text-xl font-bold text-text-main mb-2">Order History</h3>
+                  <p className="text-text-muted max-w-md">
+                    You haven't placed any vehicle reservations or scheduled test drives yet. When you do, you'll be able to track them all right here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  {purchases.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                        <Package size={18} className="text-green-500" />
+                        Purchased Vehicles
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {purchases.map(purchase => (
+                          <div key={purchase._id} className="relative">
+                            <VehicleCard vehicle={purchase.vehicleId} />
+                            <div className="absolute top-4 left-4 bg-green-500 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm z-10">
+                              Purchased
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {testDrives.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                        <Clock size={18} className="text-blue-500" />
+                        Upcoming Test Drives
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {testDrives.map(drive => (
+                          <div key={drive._id} className="bg-card rounded-2xl border border-border p-4 flex gap-4 shadow-sm items-center">
+                            {drive.vehicleId?.imageUrl ? (
+                              <img src={drive.vehicleId.imageUrl} alt={drive.vehicleId.make} className="w-24 h-24 object-contain" />
+                            ) : (
+                              <div className="w-24 h-24 bg-surface rounded-xl flex items-center justify-center text-text-muted">
+                                <Car size={32} />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h4 className="font-bold text-text-main line-clamp-1">{drive.vehicleId?.make} {drive.vehicleId?.model}</h4>
+                              <div className="text-sm font-medium text-text-muted mt-1">{drive.date}</div>
+                              <div className="text-primary font-bold mt-0.5">{drive.slot}</div>
+                            </div>
+                            <div className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/10 text-blue-500">
+                              {drive.status}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
